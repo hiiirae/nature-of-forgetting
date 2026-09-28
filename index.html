@@ -185,8 +185,8 @@ function drawMV(){const m=st.m;if(m.mode=='map'){let k=m.k||.3;$('#mv').innerHTM
  const secs=SEC_ORDER,rows=m.sec?[...new Set(S.filter(s=>s.sec==m.sec).map(s=>s.row))]:[],nums=S.filter(s=>s.sec==m.sec&&s.row==m.row).map(s=>s.num);
  const o=(a,v,t)=>`<option value="${a}"${a==v?' selected':''}>${t}</option>`,rl=x=>x=='IN'?'안쪽':x=='OUT'?'바깥쪽':x+'열';
  $('#mv').innerHTML=`<select data-k="sec">${o('',m.sec,'층 / 구역')}${secs.map(k=>o(k,m.sec,SEC[k].l)).join('')}</select>${rows.length>1?`<select data-k="row">${o('',m.row,'열')}${rows.map(x=>o(x,m.row,rl(x))).join('')}</select>`:''}${m.row?`<select data-k="num">${o('',m.num,'번호')}${nums.map(x=>o(x,m.num,x+'번')).join('')}</select>`:''}`}}
-function drawMP(){const m=st.m,s=SM[m.sel];$('#mp').innerHTML=`<div class="ps"><small>선택한 좌석</small><b>${s?seatName(s)+' · '+GR[s.grade]:'좌석을 선택하세요'}</b></div><div class="pbt">${rec(m.pid)?'<button data-act="del">기록 삭제</button>':''}<button class="pri" data-act="save" ${s?'':'disabled'}>이 좌석으로 저장</button></div>`}
-function pickSeat(id){const m=st.m;if(m){const s=SM[id];Object.assign(m,{sel:id,sec:s.sec,row:s.row,num:s.num});mark(id);drawMP()}else{st.ss=id;mark(id);$('#sd').innerHTML=seatDetail()}}
+function drawMP(){const m=st.m,s=SM[m.sel];$('#mp').innerHTML=`<div class="ps"><small>선택한 좌석</small><b>${s?seatName(s)+' · '+GR[s.grade]:'좌석을 선택하세요'}</b></div><div class="pbt">${m.cd&&rec(m.pid)?'<button data-act="del">정말 삭제할까요? 한 번 더 누르세요</button><button data-act="delc">취소</button>':`${rec(m.pid)?'<button data-act="del">기록 삭제</button>':''}<button class="pri" data-act="save" ${s?'':'disabled'}>이 좌석으로 저장</button>`}</div>`}
+function pickSeat(id){const m=st.m;if(m){const s=SM[id];Object.assign(m,{sel:id,sec:s.sec,row:s.row,num:s.num,cd:0});mark(id);drawMP()}else{st.ss=id;mark(id);$('#sd').innerHTML=seatDetail()}}
 
 /* ===== render + events ===== */
 function render(){const T2=[['home','HOME'],['sched','SCHEDULE'],['seats','SEATS'],['stats','STATS']];
@@ -209,12 +209,13 @@ document.addEventListener('click',e=>{const sb=e.target.closest('[data-seat]');i
  else if(a=='close'){closeM()}
  else if(a=='mode'){m.mode=v;document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x.dataset.v==v));drawMV()}
  else if(a=='save'&&m.sel){recs=recs.filter(r=>r.performanceId!=m.pid);recs.push({performanceId:m.pid,watched:true,seatId:m.sel});persist();closeM();render()}
- else if(a=='del'&&!m.cd){m.cd=1;b.textContent='정말 삭제할까요? 한 번 더 누르세요'}
+ else if(a=='del'&&!m.cd){m.cd=1;drawMP()}
+ else if(a=='delc'){m.cd=0;drawMP()}
  else if(a=='del'){recs=recs.filter(r=>r.performanceId!=m.pid);persist();closeM();render()}});
 document.addEventListener('change',e=>{const bk=e.target.dataset.b;if(bk){if(bk=='role'){st.br=e.target.value;st.ba=null}else st.ba=e.target.value;st.acc={2:0,3:0,4:0};render();return}const k=e.target.dataset.k,m=st.m;if(!k||!m)return;const v=e.target.value;
  if(k=='sec'){Object.assign(m,{sec:v,row:v&&new Set(S.filter(s=>s.sec==v).map(s=>s.row)).size==1?S.find(s=>s.sec==v).row:'',num:'',sel:null})}
  else if(k=='row')Object.assign(m,{row:v,num:'',sel:null});
  else{m.num=+v;const s=S.find(s=>s.sec==m.sec&&s.row==m.row&&s.num==m.num);m.sel=s?s.id:null}
- drawMV();drawMP()});
+ m.cd=0;drawMV();drawMP()});
 render();
 </script></body></html>
