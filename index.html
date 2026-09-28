@@ -75,6 +75,7 @@ select{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(-
 .sheet.sm{height:auto;max-height:90vh;max-height:90dvh}.opt{display:block;width:100%;text-align:left;padding:10px 12px;margin:0 0 8px;border:1px solid var(--ink);border-radius:0}.opt b{display:block;font-size:16px}.opt small{color:var(--sub)}
 .xb{border-color:var(--red);color:var(--red);padding:4px 12px;border-radius:0;font-size:13px;margin:0 0 6px}
 
+/* 3차 수정 */.cover .cap{font-size:11.5px;letter-spacing:0;white-space:nowrap}
 /* ===== 리뉴얼: 밝은 아이보리 종이 + 코랄 라인 + 딥레드 (기능 로직 변경 없음) ===== */
 h1{color:var(--red);font-size:36px}#app[data-tab=home] h1{font-size:40px;line-height:1.05;margin-top:14px}
 h2,.fh{border-bottom:1px solid var(--coral)}
@@ -155,9 +156,9 @@ const sortedRecs=()=>[...recs].sort((a,b)=>a.performanceId<b.performanceId?1:-1)
 
 /* ===== seat map (shared by 기록 모달 & SEATS) ===== */
 const X0=90,Y0=365;
-function mapH(sel,showHas,kk){const k=kk||st.k,c=showHas?counts():{};
+function mapH(sel,showHas,kk,vh){const k=kk||st.k,c=showHas?counts():{};
  const d=(l,t,w,h,tx,ex='')=>`<div class="deco" style="left:${(l-X0)*k}px;top:${(t-Y0)*k}px;width:${w*k}px;height:${h*k}px;${ex}">${tx}</div>`;
- let h=`<div class="zm"><button data-act="fit">전체보기</button><button data-act="zoom" data-v="-1">−</button><button data-act="zoom" data-v="1">＋</button>확대 후 밀어서 이동</div><div class="mapw" id="mapw"><div class="map" style="width:${900*k}px;height:${730*k}px">`;
+ let h=`<div class="zm"><button data-act="fit">전체보기</button><button data-act="zoom" data-v="-1">−</button><button data-act="zoom" data-v="1">＋</button>확대 후 밀어서 이동</div><div class="mapw" id="mapw"${vh?` style="height:${vh}px;max-height:none"`:''}><div class="map" style="width:${900*k}px;height:${730*k}px">`;
  h+=d(291,378,498,148,'STAGE')+d(155,378,770,502,'','border-top:0;border-bottom:2px solid var(--sub);z-index:0;pointer-events:none')+d(500,850,80,22,'1F','border:0')+d(500,1043,80,22,'2F','border:0')+d(190,480,64,16,'L열','border:0')+d(826,480,64,16,'R열','border:0');
  S.forEach(s=>{const w=s.w==2?54:24,n=c[s.id]||0;h+=`<button class="seat g${s.grade}${n?' has':''}${s.id==sel?' sel':''}" data-seat="${s.id}" title="${seatName(s)}" style="left:${(s.x-w/2-X0)*k}px;top:${(s.y-10-Y0)*k}px;width:${w*k}px;height:${20*k}px;font-size:${Math.max(3.5,Math.min(13,8.5*k))}px">${s.wc?'휠'+s.num:s.num}${n>1?`<i style="transform:scale(${Math.min(1,k+.35)})">${n}</i>`:''}</button>`});
  return h+'</div></div>'+`<div class="lg"><span><s style="background:var(--R)"></s>R석</span><span><s style="background:var(--S)"></s>S석</span><span><s style="background:var(--A)"></s>A석</span><span><s style="background:var(--H)"></s>등급 미표기</span>${showHas?'<span><s style="background:var(--red)"></s>내가 앉은 좌석</span>':'<span><s style="background:var(--ink)"></s>선택한 좌석</span>'}</div>`}
@@ -169,7 +170,7 @@ function home(){const n=recs.length,ps=recs.map(r=>PM[r.performanceId]),asc=[...
  const top=k=>{const t=tally(ps.map(p=>p.cast[k]))[0];return t?`${t[0]} ${t[1]}회`:'-'},cb=tally(ps.map(p=>ROLES.map(([k])=>p.cast[k]).join(' / ')))[0];
  const sc=(v,l)=>`<button class="${st.sort==v?'on':''}" data-act="sort" data-v="${v}">${l}</button>`;
  return`<h1>The Nature<br>of Forgetting</h1><p class="sub">${PZ}나의 관극 기록</p><div class="rule">${BK}</div>
- <div class="cover"><small>총 관람</small><div class="big">${n}<span>회</span></div><div class="cap">PERFORMANCES${n?` · 첫 관람 ${fd(PM[asc[0].performanceId].date)} · 마지막 관람 ${fd(PM[asc[n-1].performanceId].date)}`:''}</div></div>
+ <div class="cover"><small>총 관람</small><div class="big">${n}<span>회</span></div><div class="cap">${n?`첫 관람 ${fd(PM[asc[0].performanceId].date)} · 마지막 관람 ${fd(PM[asc[n-1].performanceId].date)}`:''}</div></div>
  <dl class="tops">${ROLES.map(([k,l])=>`<div><dt>가장 많이 본 ${l}</dt><dd>${top(k)}</dd></div>`).join('')}</dl>
  <div class="combo"><small>가장 많이 본 캐스팅 조합</small><b>${cb?cb[0]+' · '+cb[1]+'회':'-'}</b></div><div class="rule">${PZ}</div>
  <div class="fh"><b>나의 관람 회차<span>관람 기록 ${n}회</span></b><button data-act="fold">${st.fold?'펼치기 ▾':'접기 ▴'}</button></div>
@@ -182,7 +183,7 @@ function sched(){const sel=ROLES.map(([k])=>st.af[k]).filter(Boolean);
  <div class="fbar"><div class="chips">${ch('f','all','전체')}${ch('f','w','관람')}${ch('f','n','미관람')}</div><div class="chips">${ch('mo','all','전체 월')}${ch('mo',9,'9월')}${ch('mo',10,'10월')}${ch('mo',11,'11월')}</div>
  <div class="af" data-act="afo"><span>배우 필터</span><b>${sel.length?sel.join(' · '):'전체'}</b>${flt?`<small>전체 ${P.length}회차 중 ${L.length}회차</small>`:''}<span>${st.afo?'▴':'▾'}</span></div>${st.afo?panel:''}</div>
  ${L.map(p=>{const r=rec(p.id);return`<div class="pf${r?' done':''}"><div class="h"><b class="${dcls(p.date)}">${fd(p.date).slice(5)} ${wd(p.date)}</b><span>${p.time}</span><button class="r" data-act="open" data-v="${p.id}">${r?'기록 수정':'관람 기록'}</button></div>${castH(p)}<div class="st${r?' d':''}">${r?PZ+'관람 완료 · '+seatName(SM[r.seatId]):'미관람'}</div></div>`}).join('')||'<div class="empty">해당하는 회차가 없습니다.</div>'}`}
-function seats(){const c=counts(),s=SM[st.ss];return`<h1>Seats</h1><p class="sub">내가 앉아본 자리</p>${mapH(st.ss,true,st.ks||fitK())}<div id="sd">${seatDetail()}</div>`}
+function seats(){const c=counts(),s=SM[st.ss];return`<h1>Seats</h1><p class="sub">내가 앉아본 자리</p>${mapH(st.ss,true,st.ks||fitK(),Math.ceil(730*fitK())+2)}<div id="sd">${seatDetail()}</div>`}
 function seatDetail(){const s=SM[st.ss];if(!s)return'<div class="empty">좌석을 눌러 관람 기록을 확인하세요.</div>';const L=recs.filter(r=>r.seatId==s.id).sort((a,b)=>a.performanceId<b.performanceId?-1:1);
  return`<h2>${seatName(s)} <small>(${GR[s.grade]})</small></h2><b>총 ${L.length}회 관람</b>${L.map(r=>{const p=PM[r.performanceId];return`<div class="dt"><b>${fd(p.date)} ${p.time}</b>${castH(p)}</div>`}).join('')}`}
 function baseSec(ps){const rk=st.br,nm=Object.fromEntries(ROLES),ac=ACTOR_ORDER[rk];if(!ac.includes(st.ba))st.ba=ac[0];
@@ -257,7 +258,7 @@ function drawSettle(ctx,W,imgs,inc){
  const L=(x1,x2,yy,c=LN,w=2)=>{ctx.strokeStyle=c;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(x1,yy);ctx.lineTo(x2,yy);ctx.stroke()};
  const pz=(cx,cy,sz,c)=>{ctx.save();ctx.translate(cx-sz/2,cy-sz/2);ctx.scale(sz/12,sz/12);ctx.fillStyle=c;ctx.fill(new Path2D(PZD));ctx.restore()};
  const rule=yy=>{L(M,W/2-24,yy);L(W/2+24,W-M,yy);pz(W/2,yy,20,RED)};
- T('The Nature',W/2,130,F(800,92),INK);T('of Forgetting',W/2,230,F(800,92),INK);T('나의 관극 정산',W/2,298,F(700,34),SUB);rule(350);
+ T('The Nature',W/2,130,F(800,92),RED);T('of Forgetting',W/2,230,F(800,92),RED);T('나의 관극 정산',W/2,298,F(700,34),SUB);rule(350);
  T('총 관람',W/2,414,F(700,28),SUB);
  const big=String(n),suf=` / ${P.length}회`;ctx.font=F(800,180);const w1=ctx.measureText(big).width;ctx.font=F(700,52);const w2=ctx.measureText(suf).width,x0=(W-w1-w2)/2;
  T(big,x0,590,F(800,180),RED,'left');T(suf,x0+w1,590,F(700,52),INK,'left');rule(650);
