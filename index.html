@@ -67,11 +67,13 @@ select{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(-
 .pf .h b.dr{color:var(--red)}.pf .h b.db{color:var(--blue)}
 .ps{min-height:calc(14px + 2.7em);font-size:14px;line-height:1.35}.ps small{display:block;color:var(--sub);font-size:11px;line-height:14px}.ps b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all}
 .pbt{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}.pbt button{flex:none;white-space:nowrap}.pbt .pri{margin-left:auto}
-.rh{font-size:11px;letter-spacing:1.2px;color:var(--sub);border-bottom:1px solid var(--line);padding-bottom:3px;margin:18px 0 8px}
-.cg{display:grid;grid-template-columns:repeat(3,minmax(0,140px));gap:12px;justify-content:start}
+.rh{text-align:center;font-size:11px;letter-spacing:1.2px;color:var(--sub);border-bottom:1px solid var(--line);padding-bottom:3px;margin:18px 0 8px}
+.cg{display:flex;justify-content:center;gap:12px}.pr{width:min(140px,calc((100% - 24px)/3));text-align:left}
 .pr .pi,.pr .ph{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center 20%;background:var(--p2);border-radius:0}
 .ph{display:flex;align-items:center;justify-content:center}.ph .pz{width:26px;height:26px;margin:0;fill:var(--sub);opacity:.45}
 .pr b{display:block;font-size:14px;margin-top:5px;line-height:1.25}.pr span{font-size:12px;color:var(--red)}
+.sheet.sm{height:auto;max-height:90vh;max-height:90dvh}.opt{display:block;width:100%;text-align:left;padding:10px 12px;margin:0 0 8px;border:1px solid var(--ink);border-radius:0}.opt b{display:block;font-size:16px}.opt small{color:var(--sub)}
+.xb{border-color:var(--red);color:var(--red);padding:4px 12px;border-radius:0;font-size:13px;margin:0 0 6px}
 </style></head><body><main id="app"></main><nav id="nav"></nav><div id="modal"></div>
 <script>
 /* ===== DATA: performances (source: 공식 CAST SCHEDULE 5장). Token = MMDD-HHMM-톰/소피이자벨라/마이크/엠마 코드. '공연 없음'(9/28,10/12,10/26) 미생성 ===== */
@@ -174,7 +176,7 @@ function baseSec(ps){const rk=st.br,nm=Object.fromEntries(ROLES),ac=ACTOR_ORDER[
  return`<h2>배우 기준 조합 정산</h2><div>기준 역할 <select data-b="role">${ROLES.map(([k,l])=>opt(k,rk,l)).join('')}</select> 기준 배우 <select data-b="actor">${ac.map(a=>opt(a,st.ba,a)).join('')}</select></div>
  <p><b>${st.ba} 관람 ${sub.length}회</b></p>${sub.length?`<div class="abx">${[2,3,4].map(n=>`<div class="ac" data-act="acc" data-v="${n}"><span>${n}인 조합 정산</span><span>${st.acc[n]?'－':'＋'}</span></div>${st.acc[n]?`<div class="ab">${body[n]}</div>`:''}`).join('')}</div>`:`<div class="empty">${st.ba} 배우의 관람 기록이 없습니다.</div>`}`}
 function stats(){const n=recs.length,ps=recs.map(r=>PM[r.performanceId]),ss=recs.map(r=>SM[r.seatId]),mo=[9,10,11].map(m=>[m+'월',ps.filter(p=>+p.date.slice(5,7)==m).length]);
- return`<h1>Stats<span class="ti">${BK}</span></h1><p class="sub">관극 정산 · 기록으로 자동 계산됩니다</p>
+ return`<h1>Stats<span class="ti">${BK}</span></h1><p class="sub">관극 정산 · 기록으로 자동 계산됩니다</p><button class="xb" data-act="exp">정산판 이미지로 저장</button>
  <div class="cover"><small>총 관람</small><div class="big" style="font-size:64px">${n}<span> / ${P.length}회</span></div><div class="pg"><i style="width:${P.length?Math.min(100,n/P.length*100):0}%"></i></div></div>
  <h2>배우별 관람 횟수</h2>${ROLES.map(([k])=>`<div class="rh">${ROLE_HEAD[k]}</div><div class="cg">${ACTOR_ORDER[k].map(a=>{const sn=ps.filter(p=>p.cast[k]==a).length,tt=P.filter(p=>p.cast[k]==a).length;return`<div class="pr"><img class="pi" src="${CAST_IMAGES[a]}" alt="${a}" loading="lazy"><b>${a}</b><span>${sn}회 / ${tt}회</span></div>`}).join('')}</div>`).join('')}
  ${baseSec(ps)}
@@ -183,7 +185,7 @@ function stats(){const n=recs.length,ps=recs.map(r=>PM[r.performanceId]),ss=recs
 
 /* ===== 기록 모달 ===== */
 function openM(pid){const r=rec(pid),s=r&&SM[r.seatId];st.m={pid,k:null,init:true,sel:r?r.seatId:null,mode:'map',sec:s?s.sec:'',row:s?s.row:'',num:s?s.num:''};drawM()}
-function closeM(){st.m=null;$('#modal').innerHTML='';document.body.style.overflow=''}
+function closeM(){expTok++;if(st.exp){URL.revokeObjectURL(st.exp.url);st.exp=null}st.m=null;$('#modal').innerHTML='';document.body.style.overflow=''}
 function drawM(){const m=st.m,p=PM[m.pid],r=rec(m.pid);
  $('#modal').innerHTML=`<div class="ov"><div class="sheet"><div class="mh"><div class="h" style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:18px">${fd(p.date)} ${wd(p.date)} ${p.time}</b><button data-act="close">닫기</button></div>${castH(p)}
  <div class="tabs"><button class="${m.mode=='map'?'on':''}" data-act="mode" data-v="map">좌석표에서 선택</button><button class="${m.mode=='num'?'on':''}" data-act="mode" data-v="num">번호로 입력</button></div></div><div id="mv"></div><div id="mp"></div></div></div>`;document.body.style.overflow='hidden';drawMP();drawMV()}
@@ -212,6 +214,9 @@ document.addEventListener('click',e=>{const sb=e.target.closest('[data-seat]');i
  else if(a=='af'){const[k,ac]=v.split('|');st.af[k]=st.af[k]==ac?null:ac;render()}
  else if(a=='afr'){for(const k in st.af)st.af[k]=null;render()}
  else if(a=='afd'){st.afo=false;render()}
+ else if(a=='exp')expChoose();
+ else if(a=='gen')genExport(v=='1');
+ else if(a=='expsave'&&st.exp){const l=document.createElement('a');l.href=st.exp.url;l.download=st.exp.name;document.body.appendChild(l);l.click();l.remove()}
  else if(a=='fold'){st.fold=!st.fold;saveUI();render()}
  else if(a=='sort'){st.sort=v;render()}
  else if(a=='close'){closeM()}
@@ -225,6 +230,53 @@ document.addEventListener('change',e=>{const bk=e.target.dataset.b;if(bk){if(bk=
  else if(k=='row')Object.assign(m,{row:v,num:'',sel:null});
  else{m.num=+v;const s=S.find(s=>s.sec==m.sec&&s.row==m.row&&s.num==m.num);m.sel=s?s.id:null}
  m.cd=0;drawMV();drawMP()});
+/* ===== 정산판 이미지 (Canvas 직접 렌더링, 좌석표 포함 여부는 includeSeats 옵션 하나로 결정) ===== */
+const PZD='M1 3h3a1.5 1.5 0 1 1 3 0h4v3a1.5 1.5 0 1 0 0 3v2H1z';
+const GC={R:'#dba48d',S:'#bdd0ab',A:'#adc2d8',H:'#d2c8b4'};
+function drawSettle(ctx,W,imgs,inc){
+ const FF='"Nanum Myeongjo",Georgia,"Batang",serif',F=(w,px)=>`${w} ${px}px ${FF}`,INK='#3f2617',RED='#9B2F2A',SUB='#82644b',LN='#b9a17a',BG='#E9D9B7',P2='#dfcca4',M=80;
+ const ps=recs.map(r=>PM[r.performanceId]),n=recs.length,cn=counts();let y=0;
+ const T=(t,x,yy,f,c,al='center',bl='alphabetic')=>{ctx.font=f;ctx.fillStyle=c;ctx.textAlign=al;ctx.textBaseline=bl;ctx.fillText(t,x,yy)};
+ const L=(x1,x2,yy,c=LN,w=2)=>{ctx.strokeStyle=c;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(x1,yy);ctx.lineTo(x2,yy);ctx.stroke()};
+ const pz=(cx,cy,sz,c)=>{ctx.save();ctx.translate(cx-sz/2,cy-sz/2);ctx.scale(sz/12,sz/12);ctx.fillStyle=c;ctx.fill(new Path2D(PZD));ctx.restore()};
+ const rule=yy=>{L(M,W/2-24,yy);L(W/2+24,W-M,yy);pz(W/2,yy,20,RED)};
+ T('The Nature',W/2,130,F(800,92),INK);T('of Forgetting',W/2,230,F(800,92),INK);T('나의 관극 정산',W/2,298,F(700,34),SUB);rule(350);
+ T('총 관람',W/2,414,F(700,28),SUB);
+ const big=String(n),suf=` / ${P.length}회`;ctx.font=F(800,180);const w1=ctx.measureText(big).width;ctx.font=F(700,52);const w2=ctx.measureText(suf).width,x0=(W-w1-w2)/2;
+ T(big,x0,590,F(800,180),RED,'left');T(suf,x0+w1,590,F(700,52),INK,'left');rule(650);
+ T('배우별 관람 횟수',W/2,716,F(700,30),INK);y=740;
+ const PW=190,PH=253,GAP=44,HD={tom:'TOM · 톰',sophieIsabella:'SOPHIE & ISABELLA · 소피·이자벨라',mike:'MIKE · 마이크',emma:'EMMA · 엠마'};
+ for(const[k]of ROLES){y+=58;ctx.font=F(700,24);const tw=ctx.measureText(HD[k]).width;T(HD[k],W/2,y,F(700,24),SUB);L(M,W/2-tw/2-20,y-8,LN,1.5);L(W/2+tw/2+20,W-M,y-8,LN,1.5);
+  const acs=ACTOR_ORDER[k],tot=acs.length*PW+(acs.length-1)*GAP,top=y+24;
+  acs.forEach((a,i)=>{const x=(W-tot)/2+i*(PW+GAP),im=imgs[a],sn=ps.filter(p=>p.cast[k]==a).length,tt=P.filter(p=>p.cast[k]==a).length;
+   if(im){const sc=Math.max(PW/im.naturalWidth,PH/im.naturalHeight),sw=PW/sc,sh=PH/sc;ctx.drawImage(im,(im.naturalWidth-sw)/2,(im.naturalHeight-sh)*.2,sw,sh,x,top,PW,PH)}else{ctx.fillStyle=P2;ctx.fillRect(x,top,PW,PH);pz(x+PW/2,top+PH/2,44,'rgba(130,100,75,.45)')}
+   T(a,x+PW/2,top+PH+40,F(700,30),INK);T(`${sn} / ${tt}회`,x+PW/2,top+PH+78,F(700,26),RED)});
+  y=top+PH+78+30}
+ if(inc){y+=34;rule(y);y+=62;T('SEAT RECORD · 나의 좌석 기록',W/2,y,F(700,26),SUB);y+=34;
+  const k=(W-2*M)/900,ox=M,oy=y,X=v=>(v-90)*k+ox,Y=v=>(v-365)*k+oy;
+  ctx.strokeStyle=SUB;ctx.lineWidth=1.5;ctx.strokeRect(X(291),Y(378),498*k,148*k);T('STAGE',X(540),Y(452),F(400,26),SUB,'center','middle');
+  ctx.beginPath();ctx.moveTo(X(155),Y(378));ctx.lineTo(X(155),Y(880));ctx.lineTo(X(925),Y(880));ctx.lineTo(X(925),Y(378));ctx.stroke();
+  T('1F',X(540),Y(861),F(700,24),SUB,'center','middle');T('2F',X(540),Y(1054),F(700,24),SUB,'center','middle');T('L열',X(222),Y(489),F(400,20),SUB,'center','middle');T('R열',X(858),Y(489),F(400,20),SUB,'center','middle');
+  S.forEach(s=>{const w=(s.w==2?54:24)*k,h=20*k,x=X(s.x)-w/2,yy=Y(s.y)-h/2,c=cn[s.id]||0;ctx.fillStyle=c?RED:GC[s.grade];ctx.fillRect(x,yy,w,h);ctx.strokeStyle=c?RED:'rgba(63,38,23,.45)';ctx.lineWidth=1;ctx.strokeRect(x,yy,w,h);
+   T(s.wc?'휠'+s.num:String(s.num),x+w/2,yy+h/2+1,F(400,Math.max(9,8.5*k)),c?BG:INK,'center','middle')});
+  S.forEach(s=>{const c=cn[s.id]||0;if(c>1){const w=(s.w==2?54:24)*k,cx=X(s.x)+w/2-2,cy=Y(s.y)-10*k+2;ctx.beginPath();ctx.arc(cx,cy,10,0,7);ctx.fillStyle=INK;ctx.fill();T(String(c),cx,cy+1,F(700,13),BG,'center','middle')}});
+  y=oy+730*k+44;
+  const lg=[['R석',GC.R],['S석',GC.S],['A석',GC.A],['등급 미표기',GC.H],['내가 앉은 좌석',RED]];ctx.font=F(400,22);const ws=lg.map(([t])=>30+ctx.measureText(t).width),sum=ws.reduce((a,b)=>a+b,0)+28*(lg.length-1);let lx=(W-sum)/2;
+  lg.forEach(([t,c],i)=>{ctx.fillStyle=c;ctx.fillRect(lx,y-15,22,16);ctx.strokeStyle='rgba(63,38,23,.45)';ctx.lineWidth=1;ctx.strokeRect(lx,y-15,22,16);T(t,lx+30,y,F(400,22),INK,'left');lx+=ws[i]+28});y+=40}
+ return y+70}
+async function makeSettlement(inc){
+ try{await Promise.all(['400','700','800'].map(w=>document.fonts.load(`${w} 40px "Nanum Myeongjo"`)));await document.fonts.ready}catch(e){}
+ const imgs={};await Promise.all(Object.entries(CAST_IMAGES).map(([a,u])=>new Promise(res=>{const im=new Image();im.onload=()=>{imgs[a]=im;res()};im.onerror=()=>res();im.src=u})));
+ const W=1200,H=Math.ceil(drawSettle(document.createElement('canvas').getContext('2d'),W,imgs,inc)),sc=Math.min(2,Math.sqrt(15e6/(W*H)));
+ const cv=document.createElement('canvas');cv.width=Math.round(W*sc);cv.height=Math.round(H*sc);const ctx=cv.getContext('2d');ctx.scale(sc,sc);
+ ctx.fillStyle='#E9D9B7';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#b9a17a';ctx.lineWidth=2;ctx.strokeRect(30,30,W-60,H-60);drawSettle(ctx,W,imgs,inc);
+ return await new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error('toBlob')),'image/png'))}
+let expTok=0;
+function expChoose(){document.body.style.overflow='hidden';$('#modal').innerHTML=`<div class="ov"><div class="sheet sm"><div style="padding:16px calc(16px + 0px) calc(16px + env(safe-area-inset-bottom,0px))"><b style="font-size:18px">정산판 이미지로 저장</b><p class="sub" style="margin:4px 0 12px">어떤 정산판을 저장할까요?</p><button class="opt" data-act="gen" data-v="0"><b>관람 정산만</b><small>총 관람 + 배우별 관람 횟수</small></button><button class="opt" data-act="gen" data-v="1"><b>좌석표 포함</b><small>총 관람 + 배우별 관람 횟수 + 좌석 기록</small></button><button class="opt" data-act="close" style="margin:0">취소</button></div></div></div>`}
+async function genExport(inc){const tok=++expTok;$('#modal').innerHTML=`<div class="ov"><div class="sheet sm"><div style="padding:28px 16px;text-align:center">${PZ}정산판 이미지를 만드는 중…</div></div></div>`;
+ try{const blob=await makeSettlement(inc);if(tok!=expTok)return;st.exp={url:URL.createObjectURL(blob),name:inc?'nature-of-forgetting-summary-with-seats.png':'nature-of-forgetting-summary.png'};
+  $('#modal').innerHTML=`<div class="ov"><div class="sheet"><div class="mh" style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:18px">정산판 미리보기</b><button data-act="close">닫기</button></div><div id="mv" style="display:block;overflow:auto;padding:8px 16px"><p class="sub" style="margin:0 0 8px;font-size:13px">이미지를 길게 누르면 '사진에 저장'할 수 있습니다.</p><img id="expimg" alt="정산판" src="${st.exp.url}" style="width:100%;display:block;border:1px solid var(--line)"></div><div id="mp"><div class="pbt"><button class="pri" data-act="expsave">PNG 저장</button><button data-act="close">닫기</button></div></div></div></div>`}
+ catch(e){if(tok!=expTok)return;$('#modal').innerHTML=`<div class="ov"><div class="sheet sm"><div style="padding:20px 16px"><p>이미지를 만들지 못했습니다. 다시 시도해 주세요.</p><button data-act="close">닫기</button></div></div></div>`}}
 document.addEventListener('error',e=>{const t=e.target;if(t&&t.classList&&t.classList.contains('pi')){const d=document.createElement('div');d.className='ph';d.innerHTML=PZ;t.replaceWith(d)}},true);
 render();
 </script></body></html>
