@@ -67,6 +67,11 @@ select{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(-
 .pf .h b.dr{color:var(--red)}.pf .h b.db{color:var(--blue)}
 .ps{min-height:calc(14px + 2.7em);font-size:14px;line-height:1.35}.ps small{display:block;color:var(--sub);font-size:11px;line-height:14px}.ps b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all}
 .pbt{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}.pbt button{flex:none;white-space:nowrap}.pbt .pri{margin-left:auto}
+.rh{font-size:11px;letter-spacing:1.2px;color:var(--sub);border-bottom:1px solid var(--line);padding-bottom:3px;margin:18px 0 8px}
+.cg{display:grid;grid-template-columns:repeat(3,minmax(0,140px));gap:12px;justify-content:start}
+.pr .pi,.pr .ph{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center 20%;background:var(--p2);border-radius:0}
+.ph{display:flex;align-items:center;justify-content:center}.ph .pz{width:26px;height:26px;margin:0;fill:var(--sub);opacity:.45}
+.pr b{display:block;font-size:14px;margin-top:5px;line-height:1.25}.pr span{font-size:12px;color:var(--red)}
 </style></head><body><main id="app"></main><nav id="nav"></nav><div id="modal"></div>
 <script>
 /* ===== DATA: performances (source: 공식 CAST SCHEDULE 5장). Token = MMDD-HHMM-톰/소피이자벨라/마이크/엠마 코드. '공연 없음'(9/28,10/12,10/26) 미생성 ===== */
@@ -88,6 +93,9 @@ const ACTOR_ORDER={tom:['박정원','전성우','백성현'],sophieIsabella:['�
    일요일은 요일 규칙으로 빨강, 나머지 토요일은 파랑 */
 const RED_DATES=['2026-09-24','2026-09-25','2026-09-26','2026-10-03','2026-10-05','2026-10-09'];
 const dcls=d=>RED_DATES.includes(d)||wd(d)=='일'?'dr':wd(d)=='토'?'db':'';
+/* 배우 프로필 이미지 경로 (GitHub 저장소 기준 상대경로). 파일이 없거나 로드 실패 시 퍼즐 조각 자리표시로 대체됨 */
+const CAST_IMAGES={'박정원':'images/cast/park-jungwon.png','전성우':'images/cast/jeon-sungwoo.png','백성현':'images/cast/baek-sunghyun.png','김주연':'images/cast/kim-juyeon.png','이정화':'images/cast/lee-junghwa.png','김시유':'images/cast/kim-siyu.png','곽다인':'images/cast/kwak-dain.png','강은나':'images/cast/kang-eunna.png','송나영':'images/cast/song-nayoung.png'};
+const ROLE_HEAD={tom:'TOM · 톰',sophieIsabella:'SOPHIE &amp; ISABELLA · 소피·이자벨라',mike:'MIKE · 마이크',emma:'EMMA · 엠마'};
 const SEC={FRONT:{f:1,l:'1층 OP석'},L:{f:1,l:'1층 L열'},R:{f:1,l:'1층 R열'},LS:{f:2,i:1,l:'2층 좌측 사이드'},RS:{f:2,i:1,l:'2층 우측 사이드'},CENTER:{f:1,l:'1층 객석'},MAIN:{f:2,l:'2층'}};
 const S=[];const g=(sec,row,num,grade,x,y,w=1)=>S.push({id:`${SEC[sec].i||SEC[sec].f}F-${sec}-${row}-${num}`,f:SEC[sec].f,sec,row:String(row),num,grade,x,y,w,wc:w==2});
 for(const s of['LS','RS'])for(let n=1;n<=16;n++)g(s,1,n,n<10?'H':'A',s=='LS'?116:964,n<8?472+23.1*(n-1):663+23*(n-8));
@@ -168,7 +176,7 @@ function baseSec(ps){const rk=st.br,nm=Object.fromEntries(ROLES),ac=ACTOR_ORDER[
 function stats(){const n=recs.length,ps=recs.map(r=>PM[r.performanceId]),ss=recs.map(r=>SM[r.seatId]),mo=[9,10,11].map(m=>[m+'월',ps.filter(p=>+p.date.slice(5,7)==m).length]);
  return`<h1>Stats<span class="ti">${BK}</span></h1><p class="sub">관극 정산 · 기록으로 자동 계산됩니다</p>
  <div class="cover"><small>총 관람</small><div class="big" style="font-size:64px">${n}<span> / ${P.length}회</span></div><div class="pg"><i style="width:${P.length?Math.min(100,n/P.length*100):0}%"></i></div></div>
- <h2>배우별 관람 횟수 <small style="font-weight:400;color:var(--sub);font-size:12px">내 관람 / 전체 출연</small></h2>${ROLES.map(([k,l])=>`<b>${l}</b>${ACTOR_ORDER[k].map(a=>{const sn=ps.filter(p=>p.cast[k]==a).length,tt=P.filter(p=>p.cast[k]==a).length;return`<div class="bar w"><span>${a}</span><span><i style="width:${tt?sn/tt*100:0}%"></i></span><b>${sn}회 / ${tt}회</b></div>`}).join('')}`).join('<div style="height:8px"></div>')}
+ <h2>배우별 관람 횟수</h2>${ROLES.map(([k])=>`<div class="rh">${ROLE_HEAD[k]}</div><div class="cg">${ACTOR_ORDER[k].map(a=>{const sn=ps.filter(p=>p.cast[k]==a).length,tt=P.filter(p=>p.cast[k]==a).length;return`<div class="pr"><img class="pi" src="${CAST_IMAGES[a]}" alt="${a}" loading="lazy"><b>${a}</b><span>${sn}회 / ${tt}회</span></div>`}).join('')}</div>`).join('')}
  ${baseSec(ps)}
  <h2>월별 관람</h2>${bars(mo)}
  <div class="rule">${PZ}</div><div class="minor"><h2>좌석 기록</h2><b>층별</b>${bars(tally(ss.map(s=>s.f+'층')))}<div style="height:8px"></div><b>열별</b>${bars(tally(ss.map(rowName)))}<div style="height:8px"></div><b>가장 많이 앉은 좌석</b>${bars(tally(ss.map(seatName)).slice(0,5))}</div>`}
@@ -217,5 +225,6 @@ document.addEventListener('change',e=>{const bk=e.target.dataset.b;if(bk){if(bk=
  else if(k=='row')Object.assign(m,{row:v,num:'',sel:null});
  else{m.num=+v;const s=S.find(s=>s.sec==m.sec&&s.row==m.row&&s.num==m.num);m.sel=s?s.id:null}
  m.cd=0;drawMV();drawMP()});
+document.addEventListener('error',e=>{const t=e.target;if(t&&t.classList&&t.classList.contains('pi')){const d=document.createElement('div');d.className='ph';d.innerHTML=PZ;t.replaceWith(d)}},true);
 render();
 </script></body></html>
