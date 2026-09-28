@@ -56,6 +56,14 @@ select{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(-
 .cr{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:3px 0;border-bottom:1px dotted var(--line)}.cr b{white-space:nowrap}
 .ac{display:flex;justify-content:space-between;padding:10px 2px;border-top:1px solid var(--line);cursor:pointer;font-weight:700}.ac:hover{background:var(--p2)}.ac span+span{color:var(--red);font-size:18px}
 .ab{padding-bottom:10px}.ab h3{font-size:13px;color:var(--sub);margin:12px 0 4px;font-weight:700}.abx{border-bottom:1px solid var(--line)}
+.pf{padding:6px 2px;line-height:1.35}.pf.done{padding-left:9px}.pf .h{gap:6px}.pf .h b{font-size:15px}.pf .h .r{padding:1px 8px;font-size:12px;border-radius:0}
+.pf .cast{margin-top:2px;font-size:13.5px;gap:2px}.pf .cast em{font-size:10px;line-height:1.3;opacity:.85}.pf .st{font-size:12px;margin-top:1px}.pf .pz{width:11px;height:11px}
+.fbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:4;background:var(--bg);margin:0 -18px;padding:3px 18px;border-bottom:1px solid var(--red);max-height:70vh;overflow:auto}
+.fbar .chips{margin:2px 0;gap:4px}.fbar .chips button{padding:1px 8px;font-size:12px;border-radius:0}
+.af{display:flex;align-items:baseline;gap:8px;font-size:12px;padding:3px 0;cursor:pointer}.af b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.af small{color:var(--sub);white-space:nowrap;font-size:11px}
+.ar{display:flex;gap:4px;align-items:center;margin:3px 0;flex-wrap:wrap}.rl{font-size:11px;color:var(--sub);width:74px}.ar button{padding:1px 8px;font-size:12px;border-radius:0;border-color:var(--line)}.ar button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.abt{display:flex;gap:6px;justify-content:flex-end;margin:4px 0}.abt button{padding:1px 10px;font-size:12px;border-radius:0}
+.bar.w{grid-template-columns:minmax(60px,28%) 1fr 96px}.pg{height:2px;background:var(--line);margin-top:8px}.pg i{display:block;height:100%;background:var(--red)}
 </style></head><body><main id="app"></main><nav id="nav"></nav><div id="modal"></div>
 <script>
 /* ===== DATA: performances (source: 공식 CAST SCHEDULE 5장). Token = MMDD-HHMM-톰/소피이자벨라/마이크/엠마 코드. '공연 없음'(9/28,10/12,10/26) 미생성 ===== */
@@ -71,6 +79,7 @@ const P=RAW.trim().split(/\s+/).map(t=>{const[d,tm,c]=t.split('-'),date=`2026-${
 /* ===== DATA: seats (source: 공식 등급별 좌석배치도). x,y = 이미지 좌표(좌석 중심), w=2 → 휠체어석 ===== */
 /* 주의(판독 한계): 열 번호는 도면에 표기가 없어 무대에서 가까운 순서로 부여함(중앙 1열=휠체어석 줄). 사이드 1~9번(회색)은 등급 색이 범례(R/S/A)에 없어 grade 'H'(판매 보류 추정)로 표기 */
 /* 표시명(l)과 집계 층(f)만 변경. 내부 seatId 접두사(i)는 기존 그대로 유지 → 기존 localStorage 기록 호환 */
+const ACTOR_ORDER={tom:['박정원','전성우','백성현'],sophieIsabella:['김주연','이정화'],mike:['김시유','곽다인'],emma:['강은나','송나영']}; /* UI 표시 순서 전용 */
 const SEC={FRONT:{f:1,l:'1층 OP석'},L:{f:1,l:'1층 L열'},R:{f:1,l:'1층 R열'},LS:{f:2,i:1,l:'2층 좌측 사이드'},RS:{f:2,i:1,l:'2층 우측 사이드'},CENTER:{f:1,l:'1층 객석'},MAIN:{f:2,l:'2층'}};
 const S=[];const g=(sec,row,num,grade,x,y,w=1)=>S.push({id:`${SEC[sec].i||SEC[sec].f}F-${sec}-${row}-${num}`,f:SEC[sec].f,sec,row:String(row),num,grade,x,y,w,wc:w==2});
 for(const s of['LS','RS'])for(let n=1;n<=16;n++)g(s,1,n,n<10?'H':'A',s=='LS'?116:964,n<8?472+23.1*(n-1):663+23*(n-8));
@@ -104,7 +113,7 @@ const BK='<svg class="bk" viewBox="0 0 24 14"><g fill="none" stroke="currentColo
 const bars=e=>{if(!e.length)return'<div class="empty">기록이 없습니다.</div>';const m=Math.max(1,...e.map(x=>x[1]));return e.map(([k,n])=>`<div class="bar"><span>${k}</span><span><i style="width:${n/m*100}%"></i></span><b>${n}회</b></div>`).join('')};
 const fitKM=()=>{const w=document.querySelector('#mapw');return w?Math.max(.15,Math.min((w.clientWidth-2)/900,(w.clientHeight-2)/730,2.4)):.4};
 const fitK=()=>Math.max(.25,Math.min(($('#app').clientWidth-38)/900,innerHeight*.66/730,2.4));
-const st={br:'tom',ba:null,acc:{2:0,3:0,4:0},tab:'home',f:'all',mo:'all',k:1.5,ks:null,ss:null,m:null,sort:'asc',fold:false};
+const st={af:{tom:null,sophieIsabella:null,mike:null,emma:null},afo:false,br:'tom',ba:null,acc:{2:0,3:0,4:0},tab:'home',f:'all',mo:'all',k:1.5,ks:null,ss:null,m:null,sort:'asc',fold:false};
 try{st.fold=!!JSON.parse(localStorage.getItem('nof-ui-v1')||'{}').fold}catch(e){}
 const saveUI=()=>{try{localStorage.setItem('nof-ui-v1',JSON.stringify({fold:st.fold}))}catch(e){}};
 const sortedRecs=()=>[...recs].sort((a,b)=>a.performanceId<b.performanceId?1:-1);
@@ -130,15 +139,18 @@ function home(){const n=recs.length,ps=recs.map(r=>PM[r.performanceId]),asc=[...
  <div class="combo"><small>가장 많이 본 캐스팅 조합</small><b>${cb?cb[0]+' · '+cb[1]+'회':'-'}</b></div><div class="rule">${PZ}</div>
  <div class="fh"><b>나의 관람 회차<span>관람 기록 ${n}회</span></b><button data-act="fold">${st.fold?'펼치기 ▾':'접기 ▴'}</button></div>
  ${st.fold?'':`<div class="chips">${sc('asc','오래된 순')}${sc('desc','최신 순')}</div>${n?lst.map(r=>{const p=PM[r.performanceId];return`<div class="ln" data-act="open" data-v="${p.id}"><span class="d">${PZ}${fd(p.date).slice(5)} ${p.time}</span><span class="c">${ROLES.map(([k])=>p.cast[k]).join(' · ')}</span><span class="s">${seatName(SM[r.seatId])}</span></div>`}).join(''):'<div class="empty">아직 기록이 없습니다. SCHEDULE에서 관람한 회차를 골라 기록하세요.</div>'}`}`}
-function sched(){const L=P.filter(p=>(st.f=='all'||(st.f=='w')==!!rec(p.id))&&(st.mo=='all'||+p.date.slice(5,7)==st.mo));
- const ch=(a,v,l)=>`<button class="${st[a]==v?'on':''}" data-act="${a}" data-v="${v}">${l}</button>`;
+function sched(){const sel=ROLES.map(([k])=>st.af[k]).filter(Boolean);
+ const L=P.filter(p=>(st.f=='all'||(st.f=='w')==!!rec(p.id))&&(st.mo=='all'||+p.date.slice(5,7)==st.mo)&&sel.every(a=>Object.values(p.cast).includes(a)));
+ const ch=(a,v,l)=>`<button class="${st[a]==v?'on':''}" data-act="${a}" data-v="${v}">${l}</button>`,flt=st.f!='all'||st.mo!='all'||sel.length>0;
+ const panel=ROLES.map(([k,l])=>`<div class="ar"><span class="rl">${l}</span>${ACTOR_ORDER[k].map(a=>`<button class="${st.af[k]==a?'on':''}" data-act="af" data-v="${k}|${a}">${a}</button>`).join('')}</div>`).join('')+`<div class="abt"><button data-act="afr">초기화</button><button data-act="afd">완료</button></div>`;
  return`<h1>Schedule<span class="ti">${PZ}</span></h1><p class="sub">2026.09.18 – 11.08 · 총 ${P.length}회차 · 관람 ${recs.length}회</p>
- <div class="chips">${ch('f','all','전체')}${ch('f','w','관람')}${ch('f','n','미관람')}</div><div class="chips">${ch('mo','all','전체 월')}${ch('mo',9,'9월')}${ch('mo',10,'10월')}${ch('mo',11,'11월')}</div>
+ <div class="fbar"><div class="chips">${ch('f','all','전체')}${ch('f','w','관람')}${ch('f','n','미관람')}</div><div class="chips">${ch('mo','all','전체 월')}${ch('mo',9,'9월')}${ch('mo',10,'10월')}${ch('mo',11,'11월')}</div>
+ <div class="af" data-act="afo"><span>배우 필터</span><b>${sel.length?sel.join(' · '):'전체'}</b>${flt?`<small>전체 ${P.length}회차 중 ${L.length}회차</small>`:''}<span>${st.afo?'▴':'▾'}</span></div>${st.afo?panel:''}</div>
  ${L.map(p=>{const r=rec(p.id);return`<div class="pf${r?' done':''}"><div class="h"><b>${fd(p.date).slice(5)} ${wd(p.date)}</b><span>${p.time}</span><button class="r" data-act="open" data-v="${p.id}">${r?'기록 수정':'관람 기록'}</button></div>${castH(p)}<div class="st${r?' d':''}">${r?PZ+'관람 완료 · '+seatName(SM[r.seatId]):'미관람'}</div></div>`}).join('')||'<div class="empty">해당하는 회차가 없습니다.</div>'}`}
 function seats(){const c=counts(),s=SM[st.ss];return`<h1>Seats</h1><p class="sub">내가 앉아본 자리</p>${mapH(st.ss,true,st.ks||fitK())}<div id="sd">${seatDetail()}</div>`}
 function seatDetail(){const s=SM[st.ss];if(!s)return'<div class="empty">좌석을 눌러 관람 기록을 확인하세요.</div>';const L=recs.filter(r=>r.seatId==s.id).sort((a,b)=>a.performanceId<b.performanceId?-1:1);
  return`<h2>${seatName(s)} <small>(${GR[s.grade]})</small></h2><b>총 ${L.length}회 관람</b>${L.map(r=>{const p=PM[r.performanceId];return`<div class="dt"><b>${fd(p.date)} ${p.time}</b>${castH(p)}</div>`}).join('')}`}
-function baseSec(ps){const rk=st.br,nm=Object.fromEntries(ROLES),ac=[...new Set(P.map(p=>p.cast[rk]))];if(!ac.includes(st.ba))st.ba=ac[0];
+function baseSec(ps){const rk=st.br,nm=Object.fromEntries(ROLES),ac=ACTOR_ORDER[rk];if(!ac.includes(st.ba))st.ba=ac[0];
  const sub=ps.filter(p=>p.cast[rk]==st.ba),ot=ROLES.map(x=>x[0]).filter(k=>k!=rk);
  const grp=ks=>tally(sub.map(p=>[rk,...ks].map(k=>p.cast[k]).join(' · '))).map(([t,n])=>`<div class="cr"><span>${t}</span><b>${n}회</b></div>`).join(''),lab=ks=>[rk,...ks].map(k=>nm[k]).join(' × ');
  const body={2:ot.map(o=>`<h3>${lab([o])}</h3>${grp([o])}`).join(''),3:[[0,1],[0,2],[1,2]].map(([a,b])=>`<h3>${lab([ot[a],ot[b]])}</h3>${grp([ot[a],ot[b]])}`).join(''),4:grp(ot)};
@@ -147,8 +159,8 @@ function baseSec(ps){const rk=st.br,nm=Object.fromEntries(ROLES),ac=[...new Set(
  <p><b>${st.ba} 관람 ${sub.length}회</b></p>${sub.length?`<div class="abx">${[2,3,4].map(n=>`<div class="ac" data-act="acc" data-v="${n}"><span>${n}인 조합 정산</span><span>${st.acc[n]?'－':'＋'}</span></div>${st.acc[n]?`<div class="ab">${body[n]}</div>`:''}`).join('')}</div>`:`<div class="empty">${st.ba} 배우의 관람 기록이 없습니다.</div>`}`}
 function stats(){const n=recs.length,ps=recs.map(r=>PM[r.performanceId]),ss=recs.map(r=>SM[r.seatId]),mo=[9,10,11].map(m=>[m+'월',ps.filter(p=>+p.date.slice(5,7)==m).length]);
  return`<h1>Stats<span class="ti">${BK}</span></h1><p class="sub">관극 정산 · 기록으로 자동 계산됩니다</p>
- <div class="cover"><small>총 관람</small><div class="big" style="font-size:64px">${n}<span>회</span></div></div>
- <h2>배우별 관람 횟수</h2>${ROLES.map(([k,l])=>`<b>${l}</b>${bars(tally(ps.map(p=>p.cast[k])))}`).join('<div style="height:8px"></div>')}
+ <div class="cover"><small>총 관람</small><div class="big" style="font-size:64px">${n}<span> / ${P.length}회</span></div><div class="pg"><i style="width:${P.length?Math.min(100,n/P.length*100):0}%"></i></div></div>
+ <h2>배우별 관람 횟수 <small style="font-weight:400;color:var(--sub);font-size:12px">내 관람 / 전체 출연</small></h2>${ROLES.map(([k,l])=>`<b>${l}</b>${ACTOR_ORDER[k].map(a=>{const sn=ps.filter(p=>p.cast[k]==a).length,tt=P.filter(p=>p.cast[k]==a).length;return`<div class="bar w"><span>${a}</span><span><i style="width:${tt?sn/tt*100:0}%"></i></span><b>${sn}회 / ${tt}회</b></div>`}).join('')}`).join('<div style="height:8px"></div>')}
  ${baseSec(ps)}
  <h2>월별 관람</h2>${bars(mo)}
  <div class="rule">${PZ}</div><div class="minor"><h2>좌석 기록</h2><b>층별</b>${bars(tally(ss.map(s=>s.f+'층')))}<div style="height:8px"></div><b>열별</b>${bars(tally(ss.map(rowName)))}<div style="height:8px"></div><b>가장 많이 앉은 좌석</b>${bars(tally(ss.map(seatName)).slice(0,5))}</div>`}
@@ -180,6 +192,10 @@ document.addEventListener('click',e=>{const sb=e.target.closest('[data-seat]');i
  else if(a=='fit'){if(m){m.k=null;drawMV()}else{st.ks=null;render()}}
  else if(a=='open')openM(v);
  else if(a=='acc'){st.acc[v]=st.acc[v]?0:1;render()}
+ else if(a=='afo'){st.afo=!st.afo;render()}
+ else if(a=='af'){const[k,ac]=v.split('|');st.af[k]=st.af[k]==ac?null:ac;render()}
+ else if(a=='afr'){for(const k in st.af)st.af[k]=null;render()}
+ else if(a=='afd'){st.afo=false;render()}
  else if(a=='fold'){st.fold=!st.fold;saveUI();render()}
  else if(a=='sort'){st.sort=v;render()}
  else if(a=='close'){closeM()}
