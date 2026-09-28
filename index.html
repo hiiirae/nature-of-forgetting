@@ -79,6 +79,7 @@ for(let r=0;r<3;r++)for(let c=0;c<17;c++)g('FRONT',r+1,r*17+c+1,'R',300+30*c,571
 [[1,0,2],[2,2,2],[3,4,1],[4,5,1],[5,6,1],[6,7,1],[7,8,1],[8,9,1],[9,10,1],[10,11,2],[11,13,2]].forEach(([n,c,w])=>g('CENTER',1,n,'R',329+30*c+(w==2?15:0),677,w));
 for(let r=0;r<6;r++)for(let c=0;c<15;c++)g('CENTER',r+2,c+1,'R',329+30*c,700+23*r);
 for(let r=0;r<5;r++)for(let c=0;c<20;c++)g('MAIN',r+1,c+1,'S',254+30.1*c,926+23*r);
+const SEC_ORDER=['FRONT','CENTER','L','R','MAIN','LS','RS'];
 const SM=Object.fromEntries(S.map(s=>[s.id,s])),PM=Object.fromEntries(P.map(p=>[p.id,p]));
 
 /* ===== RECORDS (localStorage) ===== */
@@ -116,7 +117,7 @@ function mapH(sel,showHas,kk){const k=kk||st.k,c=showHas?counts():{};
  h+=d(291,378,498,148,'STAGE')+d(155,378,770,502,'','border-top:0;border-bottom:2px solid var(--sub);z-index:0;pointer-events:none')+d(500,850,80,22,'1F','border:0')+d(500,1043,80,22,'2F','border:0')+d(190,480,64,16,'L열','border:0')+d(826,480,64,16,'R열','border:0');
  S.forEach(s=>{const w=s.w==2?54:24,n=c[s.id]||0;h+=`<button class="seat g${s.grade}${n?' has':''}${s.id==sel?' sel':''}" data-seat="${s.id}" title="${seatName(s)}" style="left:${(s.x-w/2-X0)*k}px;top:${(s.y-10-Y0)*k}px;width:${w*k}px;height:${20*k}px;font-size:${Math.max(3.5,Math.min(13,8.5*k))}px">${s.wc?'휠'+s.num:s.num}${n>1?`<i style="transform:scale(${Math.min(1,k+.35)})">${n}</i>`:''}</button>`});
  return h+'</div></div>'+`<div class="lg"><span><s style="background:var(--R)"></s>R석</span><span><s style="background:var(--S)"></s>S석</span><span><s style="background:var(--A)"></s>A석</span><span><s style="background:var(--H)"></s>등급 미표기</span>${showHas?'<span><s style="background:var(--red)"></s>내가 앉은 좌석</span>':'<span><s style="background:var(--ink)"></s>선택한 좌석</span>'}</div>`}
-function centerOn(id){const w=$('#mapw'),b=id&&w&&w.querySelector(`[data-seat="${id}"]`);if(!w)return;if(b){w.scrollLeft=b.offsetLeft-w.clientWidth/2;w.scrollTop=b.offsetTop-w.clientHeight/2}else w.scrollLeft=(w.scrollWidth-w.clientWidth)/2}
+function centerOn(id){const w=$('#mapw'),b=id&&w&&w.querySelector(`[data-seat="${id}"]`);if(!w)return;if(b){w.scrollLeft=b.offsetLeft-w.clientWidth/2;w.scrollTop=b.offsetTop-w.clientHeight/2}else{w.scrollLeft=(w.scrollWidth-w.clientWidth)/2;w.scrollTop=(w.scrollHeight-w.clientHeight)/2}}
 function mark(id){document.querySelectorAll('.map .sel').forEach(e=>e.classList.remove('sel'));const b=document.querySelector(`.map [data-seat="${id}"]`);if(b)b.classList.add('sel')}
 
 /* ===== pages ===== */
@@ -153,13 +154,15 @@ function stats(){const n=recs.length,ps=recs.map(r=>PM[r.performanceId]),ss=recs
  <div class="rule">${PZ}</div><div class="minor"><h2>좌석 기록</h2><b>층별</b>${bars(tally(ss.map(s=>s.f+'층')))}<div style="height:8px"></div><b>열별</b>${bars(tally(ss.map(rowName)))}<div style="height:8px"></div><b>가장 많이 앉은 좌석</b>${bars(tally(ss.map(seatName)).slice(0,5))}</div>`}
 
 /* ===== 기록 모달 ===== */
-function openM(pid){const r=rec(pid),s=r&&SM[r.seatId];st.m={pid,k:null,sel:r?r.seatId:null,mode:'map',sec:s?s.sec:'',row:s?s.row:'',num:s?s.num:''};drawM()}
+function openM(pid){const r=rec(pid),s=r&&SM[r.seatId];st.m={pid,k:null,init:true,sel:r?r.seatId:null,mode:'map',sec:s?s.sec:'',row:s?s.row:'',num:s?s.num:''};drawM()}
 function closeM(){st.m=null;$('#modal').innerHTML='';document.body.style.overflow=''}
 function drawM(){const m=st.m,p=PM[m.pid],r=rec(m.pid);
  $('#modal').innerHTML=`<div class="ov"><div class="sheet"><div class="mh"><div class="h" style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:18px">${fd(p.date)} ${wd(p.date)} ${p.time}</b><button data-act="close">닫기</button></div>${castH(p)}
  <div class="tabs"><button class="${m.mode=='map'?'on':''}" data-act="mode" data-v="map">좌석표에서 선택</button><button class="${m.mode=='num'?'on':''}" data-act="mode" data-v="num">번호로 입력</button></div></div><div id="mv"></div><div id="mp"></div></div></div>`;document.body.style.overflow='hidden';drawMP();drawMV()}
-function drawMV(){const m=st.m;if(m.mode=='map'){let k=m.k||.3;$('#mv').innerHTML=mapH(m.sel,false,k);if(!m.k)for(let i=0;i<4;i++){const f=fitKM();if(Math.abs(f-k)<.004)break;k=f;$('#mv').innerHTML=mapH(m.sel,false,k)}centerOn(m.sel)}else{
- const secs=Object.keys(SEC),rows=m.sec?[...new Set(S.filter(s=>s.sec==m.sec).map(s=>s.row))]:[],nums=S.filter(s=>s.sec==m.sec&&s.row==m.row).map(s=>s.num);
+function drawMV(){const m=st.m;if(m.mode=='map'){let k=m.k||.3;$('#mv').innerHTML=mapH(m.sel,false,k);if(!m.k){for(let i=0;i<4;i++){const f=fitKM();if(Math.abs(f-k)<.004)break;k=f;$('#mv').innerHTML=mapH(m.sel,false,k)}
+  if(m.init){m.init=false;m.k=k=Math.min(2.4,k*1.69);$('#mv').innerHTML=mapH(m.sel,false,k)}}
+  centerOn(m.sel)}else{
+ const secs=SEC_ORDER,rows=m.sec?[...new Set(S.filter(s=>s.sec==m.sec).map(s=>s.row))]:[],nums=S.filter(s=>s.sec==m.sec&&s.row==m.row).map(s=>s.num);
  const o=(a,v,t)=>`<option value="${a}"${a==v?' selected':''}>${t}</option>`,rl=x=>x=='IN'?'안쪽':x=='OUT'?'바깥쪽':x+'열';
  $('#mv').innerHTML=`<select data-k="sec">${o('',m.sec,'층 / 구역')}${secs.map(k=>o(k,m.sec,SEC[k].l)).join('')}</select>${rows.length>1?`<select data-k="row">${o('',m.row,'열')}${rows.map(x=>o(x,m.row,rl(x))).join('')}</select>`:''}${m.row?`<select data-k="num">${o('',m.num,'번호')}${nums.map(x=>o(x,m.num,x+'번')).join('')}</select>`:''}`}}
 function drawMP(){const m=st.m,s=SM[m.sel];$('#mp').innerHTML=`<div style="display:flex;align-items:center;gap:10px"><div style="flex:1;min-width:0"><small style="color:var(--sub);display:block">선택한 좌석</small><b>${s?seatName(s)+' · '+GR[s.grade]:'좌석을 선택하세요'}</b></div>${rec(m.pid)?'<button data-act="del">기록 삭제</button>':''}<button class="pri" data-act="save" ${s?'':'disabled'}>이 좌석으로 저장</button></div>`}
