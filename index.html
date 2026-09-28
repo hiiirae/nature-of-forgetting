@@ -8,9 +8,9 @@
 <title>The Nature of Forgetting — 나의 관극 기록</title>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:light;box-sizing:border-box;--bg:#E9D9B7;--ink:#3f2617;--red:#9B2F2A;--sub:#82644b;--line:#b9a17a;--p2:#dfcca4;--R:#dba48d;--S:#bdd0ab;--A:#adc2d8;--H:#d2c8b4;--blue:#3f6591;--on:#f6ecd6;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{color-scheme:light;box-sizing:border-box;--bg:#FAF8F3;--ink:#49352D;--red:#B63E39;--coral:#EE9D93;--peach:#F4C5BC;--sub:#8B7166;--line:#D8C9BC;--p2:#F3EDE3;--R:#F3C2B8;--S:#CADFC0;--A:#BFD3E8;--H:#E6DFD4;--blue:#3F6591;--on:#FFF9F4;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 'Nanum Myeongjo',Georgia,'Batang',serif;padding-bottom:64px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 'Nanum Myeongjo',Georgia,'Batang',serif;padding-bottom:64px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .4 0 0 0 0 .3 0 0 0 .035 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
 main{max-width:720px;margin:0 auto;padding:22px 18px}
 h1{font-size:34px;line-height:1.1;margin:8px 0 2px;font-weight:800;letter-spacing:-.5px}
 h2{font-size:17px;margin:28px 0 8px;padding-bottom:4px;border-bottom:2px solid var(--red);font-weight:800}
@@ -31,7 +31,7 @@ nav button{flex:1;border:0;padding:14px 0;letter-spacing:1px;font-weight:700;col
 .pz{width:13px;height:13px;fill:var(--red);vertical-align:-2px;margin-right:4px}
 .bar{display:grid;grid-template-columns:minmax(90px,38%) 1fr 44px;align-items:center;gap:8px;font-size:14px;padding:2px 0}.bar i{height:6px;background:var(--red);display:block}.bar b{text-align:right;font-weight:700}
 .mapw{overflow:auto;border:1px solid var(--line);background:var(--p2);max-height:70vh;-webkit-overflow-scrolling:touch}
-.map{position:relative}.seat{position:absolute;padding:0;border:1px solid rgba(63,38,23,.45);border-radius:2px;line-height:1;display:flex;align-items:center;justify-content:center;color:var(--ink);background:var(--H)}
+.map{position:relative}.seat{position:absolute;padding:0;border:1px solid rgba(73,53,45,.28);border-radius:2px;line-height:1;display:flex;align-items:center;justify-content:center;color:var(--ink);background:var(--H)}
 .gR{background:var(--R)}.gS{background:var(--S)}.gA{background:var(--A)}.seat:hover{outline:2px solid var(--red);z-index:2}
 .seat.has{background:var(--red);color:var(--on);border-color:var(--red)}.seat.sel{background:var(--ink);color:var(--bg);outline:2px solid var(--red);z-index:3}
 .seat i{position:absolute;top:-6px;right:-5px;font-style:normal;font-size:10px;background:var(--ink);color:var(--bg);border-radius:8px;min-width:14px;height:14px;line-height:14px;text-align:center;z-index:4}
@@ -74,6 +74,23 @@ select{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(-
 .pr b{display:block;font-size:14px;margin-top:5px;line-height:1.25}.pr span{font-size:12px;color:var(--red)}
 .sheet.sm{height:auto;max-height:90vh;max-height:90dvh}.opt{display:block;width:100%;text-align:left;padding:10px 12px;margin:0 0 8px;border:1px solid var(--ink);border-radius:0}.opt b{display:block;font-size:16px}.opt small{color:var(--sub)}
 .xb{border-color:var(--red);color:var(--red);padding:4px 12px;border-radius:0;font-size:13px;margin:0 0 6px}
+
+/* ===== 리뉴얼: 밝은 아이보리 종이 + 코랄 라인 + 딥레드 (기능 로직 변경 없음) ===== */
+h1{color:var(--red);font-size:36px}#app[data-tab=home] h1{font-size:40px;line-height:1.05;margin-top:14px}
+h2,.fh{border-bottom:1px solid var(--coral)}
+button{border-color:var(--line)}button:hover{background:rgba(244,197,188,.35)}.pri:hover{background:var(--red)}
+.chips button.on,.ar button.on,.tabs button.on{background:var(--red);border-color:var(--red);color:#fff}
+.tabs button{border-color:var(--line)}.opt,select{border-color:var(--line)}.xb{border-color:var(--coral);color:var(--red)}
+nav{background:var(--bg);border-top:1px solid var(--coral)}nav button{color:#B0A196}nav button:hover{background:none}nav button.on{color:var(--red);box-shadow:inset 0 2px 0 var(--red)}
+.fbar{background:var(--bg);border-bottom:1px solid var(--coral)}
+.pf.done{background:rgba(244,197,188,.22);border-left:3px solid var(--red)}
+.mapw{background:#FDFBF7}.seat{border-color:rgba(73,53,45,.28)}.seat.has{border-color:var(--red)}
+.rule{color:var(--coral)}.rule .pz{fill:var(--coral)}.pg{background:var(--peach)}
+.rh{width:max-content;max-width:100%;margin:20px auto 10px;padding:1px 18px;background:var(--peach);border:0;color:var(--ink);transform:rotate(-.6deg)}
+.ov{background:rgba(73,53,45,.45)}.sheet{border-top:2px solid var(--coral)}#mp{border-top:1px solid var(--coral)}
+#app{position:relative}#app::before,#app::after{content:"";position:absolute;pointer-events:none;background-repeat:no-repeat;background-size:contain;opacity:.75}
+#app[data-tab=home]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' fill='none' stroke='%23EE9D93' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 34L74 8L52 70L38 46Z'/%3E%3Cpath d='M74 8L38 46L36 62L47 52'/%3E%3Cpath d='M4 66C14 54 22 72 32 60' stroke-dasharray='2 4'/%3E%3C/svg%3E");top:14px;right:16px;width:62px;height:62px}#app[data-tab=home]::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' fill='none' stroke='%23EE9D93' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 20h16a7 7 0 1 1 14 0h16v16a7 7 0 1 1 0 14v16H14V50a7 7 0 1 0 0-14z'/%3E%3C/svg%3E");top:236px;right:22px;width:52px;height:52px}
+#app[data-tab=sched]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' fill='none' stroke='%23EE9D93' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 62L58 16L68 26L22 72L10 74Z'/%3E%3Cpath d='M52 22L62 32M12 62L22 72'/%3E%3C/svg%3E");top:10px;right:16px;width:52px;height:52px}#app[data-tab=seats]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' fill='none' stroke='%23EE9D93' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 22h64v12a6 6 0 0 0 0 12v12H8V46a6 6 0 0 0 0-12z'/%3E%3Cpath d='M52 24v34' stroke-dasharray='2 3'/%3E%3Cpath d='M18 34h24M18 44h16'/%3E%3C/svg%3E");top:12px;right:16px;width:60px;height:60px}#app[data-tab=stats]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' fill='none' stroke='%23EE9D93' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 42L30 62L68 14'/%3E%3Cpath d='M8 70C30 74 54 74 72 68' stroke-dasharray='2 4'/%3E%3C/svg%3E");top:14px;right:16px;width:54px;height:54px}
 </style></head><body><main id="app"></main><nav id="nav"></nav><div id="modal"></div>
 <script>
 /* ===== DATA: performances (source: 공식 CAST SCHEDULE 5장). Token = MMDD-HHMM-톰/소피이자벨라/마이크/엠마 코드. '공연 없음'(9/28,10/12,10/26) 미생성 ===== */
@@ -201,7 +218,7 @@ function pickSeat(id){const m=st.m;if(m){const s=SM[id];Object.assign(m,{sel:id,
 /* ===== render + events ===== */
 function render(){const T2=[['home','HOME'],['sched','SCHEDULE'],['seats','SEATS'],['stats','STATS']];
  $('#nav').innerHTML=T2.map(([k,l])=>`<button class="${st.tab==k?'on':''}" data-act="tab" data-v="${k}">${l}</button>`).join('');
- $('#app').innerHTML={home,sched,seats,stats}[st.tab]();if(st.tab=='seats')centerOn(st.ss)}
+ $('#app').dataset.tab=st.tab;$('#app').innerHTML={home,sched,seats,stats}[st.tab]();if(st.tab=='seats')centerOn(st.ss)}
 document.addEventListener('click',e=>{const sb=e.target.closest('[data-seat]');if(sb)return pickSeat(sb.dataset.seat);
  const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,v=b.dataset.v,m=st.m;
  if(a=='tab'){st.tab=v;if(v=='seats')st.ks=null;render();scrollTo(0,0)}
@@ -232,9 +249,9 @@ document.addEventListener('change',e=>{const bk=e.target.dataset.b;if(bk){if(bk=
  m.cd=0;drawMV();drawMP()});
 /* ===== 정산판 이미지 (Canvas 직접 렌더링, 좌석표 포함 여부는 includeSeats 옵션 하나로 결정) ===== */
 const PZD='M1 3h3a1.5 1.5 0 1 1 3 0h4v3a1.5 1.5 0 1 0 0 3v2H1z';
-const GC={R:'#dba48d',S:'#bdd0ab',A:'#adc2d8',H:'#d2c8b4'};
+const GC={R:'#F3C2B8',S:'#CADFC0',A:'#BFD3E8',H:'#E6DFD4'};
 function drawSettle(ctx,W,imgs,inc){
- const FF='"Nanum Myeongjo",Georgia,"Batang",serif',F=(w,px)=>`${w} ${px}px ${FF}`,INK='#3f2617',RED='#9B2F2A',SUB='#82644b',LN='#b9a17a',BG='#E9D9B7',P2='#dfcca4',M=80;
+ const FF='"Nanum Myeongjo",Georgia,"Batang",serif',F=(w,px)=>`${w} ${px}px ${FF}`,INK='#49352D',RED='#B63E39',SUB='#8B7166',LN='#D8C9BC',BG='#FAF8F3',P2='#F3EDE3',M=80;
  const ps=recs.map(r=>PM[r.performanceId]),n=recs.length,cn=counts();let y=0;
  const T=(t,x,yy,f,c,al='center',bl='alphabetic')=>{ctx.font=f;ctx.fillStyle=c;ctx.textAlign=al;ctx.textBaseline=bl;ctx.fillText(t,x,yy)};
  const L=(x1,x2,yy,c=LN,w=2)=>{ctx.strokeStyle=c;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(x1,yy);ctx.lineTo(x2,yy);ctx.stroke()};
@@ -244,9 +261,9 @@ function drawSettle(ctx,W,imgs,inc){
  T('총 관람',W/2,414,F(700,28),SUB);
  const big=String(n),suf=` / ${P.length}회`;ctx.font=F(800,180);const w1=ctx.measureText(big).width;ctx.font=F(700,52);const w2=ctx.measureText(suf).width,x0=(W-w1-w2)/2;
  T(big,x0,590,F(800,180),RED,'left');T(suf,x0+w1,590,F(700,52),INK,'left');rule(650);
- T('배우별 관람 횟수',W/2,716,F(700,30),INK);y=740;
+ ctx.font=F(700,30);const bw=ctx.measureText('배우별 관람 횟수').width;ctx.fillStyle='rgba(244,197,188,.75)';ctx.fillRect(W/2-bw/2-24,716-32,bw+48,46);T('배우별 관람 횟수',W/2,716,F(700,30),INK);y=740;
  const PW=190,PH=253,GAP=44,HD={tom:'TOM · 톰',sophieIsabella:'SOPHIE & ISABELLA · 소피·이자벨라',mike:'MIKE · 마이크',emma:'EMMA · 엠마'};
- for(const[k]of ROLES){y+=58;ctx.font=F(700,24);const tw=ctx.measureText(HD[k]).width;T(HD[k],W/2,y,F(700,24),SUB);L(M,W/2-tw/2-20,y-8,LN,1.5);L(W/2+tw/2+20,W-M,y-8,LN,1.5);
+ for(const[k]of ROLES){y+=58;ctx.font=F(700,24);const tw=ctx.measureText(HD[k]).width;ctx.fillStyle='rgba(244,197,188,.75)';ctx.fillRect(W/2-tw/2-16,y-25,tw+32,34);T(HD[k],W/2,y,F(700,24),SUB);L(M,W/2-tw/2-20,y-8,LN,1.5);L(W/2+tw/2+20,W-M,y-8,LN,1.5);
   const acs=ACTOR_ORDER[k],tot=acs.length*PW+(acs.length-1)*GAP,top=y+24;
   acs.forEach((a,i)=>{const x=(W-tot)/2+i*(PW+GAP),im=imgs[a],sn=ps.filter(p=>p.cast[k]==a).length,tt=P.filter(p=>p.cast[k]==a).length;
    if(im){const sc=Math.max(PW/im.naturalWidth,PH/im.naturalHeight),sw=PW/sc,sh=PH/sc;ctx.drawImage(im,(im.naturalWidth-sw)/2,(im.naturalHeight-sh)*.2,sw,sh,x,top,PW,PH)}else{ctx.fillStyle=P2;ctx.fillRect(x,top,PW,PH);pz(x+PW/2,top+PH/2,44,'rgba(130,100,75,.45)')}
@@ -257,19 +274,23 @@ function drawSettle(ctx,W,imgs,inc){
   ctx.strokeStyle=SUB;ctx.lineWidth=1.5;ctx.strokeRect(X(291),Y(378),498*k,148*k);T('STAGE',X(540),Y(452),F(400,26),SUB,'center','middle');
   ctx.beginPath();ctx.moveTo(X(155),Y(378));ctx.lineTo(X(155),Y(880));ctx.lineTo(X(925),Y(880));ctx.lineTo(X(925),Y(378));ctx.stroke();
   T('1F',X(540),Y(861),F(700,24),SUB,'center','middle');T('2F',X(540),Y(1054),F(700,24),SUB,'center','middle');T('L열',X(222),Y(489),F(400,20),SUB,'center','middle');T('R열',X(858),Y(489),F(400,20),SUB,'center','middle');
-  S.forEach(s=>{const w=(s.w==2?54:24)*k,h=20*k,x=X(s.x)-w/2,yy=Y(s.y)-h/2,c=cn[s.id]||0;ctx.fillStyle=c?RED:GC[s.grade];ctx.fillRect(x,yy,w,h);ctx.strokeStyle=c?RED:'rgba(63,38,23,.45)';ctx.lineWidth=1;ctx.strokeRect(x,yy,w,h);
+  S.forEach(s=>{const w=(s.w==2?54:24)*k,h=20*k,x=X(s.x)-w/2,yy=Y(s.y)-h/2,c=cn[s.id]||0;ctx.fillStyle=c?RED:GC[s.grade];ctx.fillRect(x,yy,w,h);ctx.strokeStyle=c?RED:'rgba(73,53,45,.28)';ctx.lineWidth=1;ctx.strokeRect(x,yy,w,h);
    T(s.wc?'휠'+s.num:String(s.num),x+w/2,yy+h/2+1,F(400,Math.max(9,8.5*k)),c?BG:INK,'center','middle')});
   S.forEach(s=>{const c=cn[s.id]||0;if(c>1){const w=(s.w==2?54:24)*k,cx=X(s.x)+w/2-2,cy=Y(s.y)-10*k+2;ctx.beginPath();ctx.arc(cx,cy,10,0,7);ctx.fillStyle=INK;ctx.fill();T(String(c),cx,cy+1,F(700,13),BG,'center','middle')}});
   y=oy+730*k+44;
   const lg=[['R석',GC.R],['S석',GC.S],['A석',GC.A],['등급 미표기',GC.H],['내가 앉은 좌석',RED]];ctx.font=F(400,22);const ws=lg.map(([t])=>30+ctx.measureText(t).width),sum=ws.reduce((a,b)=>a+b,0)+28*(lg.length-1);let lx=(W-sum)/2;
-  lg.forEach(([t,c],i)=>{ctx.fillStyle=c;ctx.fillRect(lx,y-15,22,16);ctx.strokeStyle='rgba(63,38,23,.45)';ctx.lineWidth=1;ctx.strokeRect(lx,y-15,22,16);T(t,lx+30,y,F(400,22),INK,'left');lx+=ws[i]+28});y+=40}
+  lg.forEach(([t,c],i)=>{ctx.fillStyle=c;ctx.fillRect(lx,y-15,22,16);ctx.strokeStyle='rgba(73,53,45,.28)';ctx.lineWidth=1;ctx.strokeRect(lx,y-15,22,16);T(t,lx+30,y,F(400,22),INK,'left');lx+=ws[i]+28});y+=40}
  return y+70}
 async function makeSettlement(inc){
  try{await Promise.all(['400','700','800'].map(w=>document.fonts.load(`${w} 40px "Nanum Myeongjo"`)));await document.fonts.ready}catch(e){}
  const imgs={};await Promise.all(Object.entries(CAST_IMAGES).map(([a,u])=>new Promise(res=>{const im=new Image();im.onload=()=>{imgs[a]=im;res()};im.onerror=()=>res();im.src=u})));
  const W=1200,H=Math.ceil(drawSettle(document.createElement('canvas').getContext('2d'),W,imgs,inc)),sc=Math.min(2,Math.sqrt(15e6/(W*H)));
  const cv=document.createElement('canvas');cv.width=Math.round(W*sc);cv.height=Math.round(H*sc);const ctx=cv.getContext('2d');ctx.scale(sc,sc);
- ctx.fillStyle='#E9D9B7';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#b9a17a';ctx.lineWidth=2;ctx.strokeRect(30,30,W-60,H-60);drawSettle(ctx,W,imgs,inc);
+ ctx.fillStyle='#FAF8F3';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#EE9D93';ctx.lineWidth=1.5;ctx.strokeRect(30,30,W-60,H-60);
+  const dr=(p,x,yy,sz,ex)=>{ctx.save();ctx.translate(x,yy);ctx.scale(sz/80,sz/80);ctx.strokeStyle='#EE9D93';ctx.lineWidth=1.8*80/sz*1.4;ctx.lineCap='round';ctx.lineJoin='round';p.forEach(d=>ctx.stroke(new Path2D(d)));ctx.restore()};
+  dr(['M6 34L74 8L52 70L38 46Z','M74 8L38 46L36 62L47 52'],W-220,60,130);dr(['M12 62L58 16L68 26L22 72L10 74Z','M52 22L62 32M12 62L22 72'],70,70,110);
+  dr(['M8 22h64v12a6 6 0 0 0 0 12v12H8V46a6 6 0 0 0 0-12z','M52 24v34','M18 34h24M18 44h16'],W-200,H-190,120);dr(['M14 20h16a7 7 0 1 1 14 0h16v16a7 7 0 1 1 0 14v16H14V50a7 7 0 1 0 0-14z'],70,H-180,100);
+  drawSettle(ctx,W,imgs,inc);
  return await new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error('toBlob')),'image/png'))}
 let expTok=0;
 function expChoose(){document.body.style.overflow='hidden';$('#modal').innerHTML=`<div class="ov"><div class="sheet sm"><div style="padding:16px calc(16px + 0px) calc(16px + env(safe-area-inset-bottom,0px))"><b style="font-size:18px">정산판 이미지로 저장</b><p class="sub" style="margin:4px 0 12px">어떤 정산판을 저장할까요?</p><button class="opt" data-act="gen" data-v="0"><b>관람 정산만</b><small>총 관람 + 배우별 관람 횟수</small></button><button class="opt" data-act="gen" data-v="1"><b>좌석표 포함</b><small>총 관람 + 배우별 관람 횟수 + 좌석 기록</small></button><button class="opt" data-act="close" style="margin:0">취소</button></div></div></div>`}
