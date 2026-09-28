@@ -39,7 +39,7 @@ nav button{flex:1;border:0;padding:14px 0;letter-spacing:1px;font-weight:700;col
 .lg{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;margin:6px 0;align-items:center}.lg s{display:inline-block;width:14px;height:11px;border:1px solid var(--sub);vertical-align:-1px;margin-right:4px;text-decoration:none}
 .zm{display:flex;gap:6px;align-items:center;margin:6px 0;font-size:13px;color:var(--sub)}
 .ov{position:fixed;inset:0;background:rgba(40,25,15,.55);z-index:10;display:flex;align-items:flex-end;justify-content:center}
-.sheet{background:var(--bg);width:100%;max-width:760px;max-height:94vh;display:flex;flex-direction:column;overflow:hidden;border-top:3px solid var(--red)}.sb{overflow:auto;padding:16px;flex:1;min-height:0}.sheet .mapw{max-height:48vh}#mp{border-top:2px solid var(--red);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg)}
+.sheet{background:var(--bg);width:100%;max-width:760px;height:92vh;height:92dvh;display:flex;flex-direction:column;overflow:hidden;border-top:3px solid var(--red)}.mh{flex:none;padding:12px 16px 0}#mv{flex:1;min-height:0;display:flex;flex-direction:column;padding:0 16px;overflow:auto;overscroll-behavior:contain}#mv>.zm,#mv>.lg{flex:none}.sheet .mapw{flex:1;min-height:0;max-height:none;overscroll-behavior:contain}#mp{flex:none}.ov{overscroll-behavior:contain}#mp{border-top:2px solid var(--red);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg)}
 .tabs{display:flex;margin:10px 0}.tabs button{flex:1;border-radius:0}.tabs button.on{background:var(--ink);color:var(--bg)}
 select{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--ink);padding:7px;margin:0 6px 8px 0;border-radius:2px;max-width:100%}
 .dt{padding:8px 0;border-bottom:1px dashed var(--line)}.dt b{font-size:15px}
@@ -101,7 +101,7 @@ const PZ='<svg class="pz" viewBox="0 0 12 12"><path d="M1 3h3a1.5 1.5 0 1 1 3 0h
 const tally=(arr)=>{const c={};arr.forEach(k=>c[k]=(c[k]||0)+1);return Object.entries(c).sort((a,b)=>b[1]-a[1])};
 const BK='<svg class="bk" viewBox="0 0 24 14"><g fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><circle cx="5" cy="9" r="3.6"/><circle cx="19" cy="9" r="3.6"/><path d="M5 9l4-6h6l4 6M9 3l3 6H5M15 3l-3 6M8 1.8h3M15 3l1-1.5h2"/></g></svg>';
 const bars=e=>{if(!e.length)return'<div class="empty">기록이 없습니다.</div>';const m=Math.max(1,...e.map(x=>x[1]));return e.map(([k,n])=>`<div class="bar"><span>${k}</span><span><i style="width:${n/m*100}%"></i></span><b>${n}회</b></div>`).join('')};
-const fitKM=()=>{const sb=document.querySelector('.sb'),w=(sb?sb.clientWidth:Math.min(innerWidth,760))-34;return Math.max(.25,Math.min(w/900,innerHeight*.47/730,2.4))};
+const fitKM=()=>{const w=document.querySelector('#mapw');return w?Math.max(.15,Math.min((w.clientWidth-2)/900,(w.clientHeight-2)/730,2.4)):.4};
 const fitK=()=>Math.max(.25,Math.min(($('#app').clientWidth-38)/900,innerHeight*.66/730,2.4));
 const st={br:'tom',ba:null,acc:{2:0,3:0,4:0},tab:'home',f:'all',mo:'all',k:1.5,ks:null,ss:null,m:null,sort:'asc',fold:false};
 try{st.fold=!!JSON.parse(localStorage.getItem('nof-ui-v1')||'{}').fold}catch(e){}
@@ -154,10 +154,11 @@ function stats(){const n=recs.length,ps=recs.map(r=>PM[r.performanceId]),ss=recs
 
 /* ===== 기록 모달 ===== */
 function openM(pid){const r=rec(pid),s=r&&SM[r.seatId];st.m={pid,k:null,sel:r?r.seatId:null,mode:'map',sec:s?s.sec:'',row:s?s.row:'',num:s?s.num:''};drawM()}
+function closeM(){st.m=null;$('#modal').innerHTML='';document.body.style.overflow=''}
 function drawM(){const m=st.m,p=PM[m.pid],r=rec(m.pid);
- $('#modal').innerHTML=`<div class="ov"><div class="sheet"><div class="sb"><div class="h" style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:18px">${fd(p.date)} ${wd(p.date)} ${p.time}</b><button data-act="close">닫기</button></div>${castH(p)}
- <div class="tabs"><button class="${m.mode=='map'?'on':''}" data-act="mode" data-v="map">좌석표에서 선택</button><button class="${m.mode=='num'?'on':''}" data-act="mode" data-v="num">번호로 입력</button></div><div id="mv"></div></div><div id="mp"></div></div></div>`;drawMV();drawMP()}
-function drawMV(){const m=st.m;if(m.mode=='map'){$('#mv').innerHTML=mapH(m.sel,false,m.k||fitKM());centerOn(m.sel)}else{
+ $('#modal').innerHTML=`<div class="ov"><div class="sheet"><div class="mh"><div class="h" style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:18px">${fd(p.date)} ${wd(p.date)} ${p.time}</b><button data-act="close">닫기</button></div>${castH(p)}
+ <div class="tabs"><button class="${m.mode=='map'?'on':''}" data-act="mode" data-v="map">좌석표에서 선택</button><button class="${m.mode=='num'?'on':''}" data-act="mode" data-v="num">번호로 입력</button></div></div><div id="mv"></div><div id="mp"></div></div></div>`;document.body.style.overflow='hidden';drawMP();drawMV()}
+function drawMV(){const m=st.m;if(m.mode=='map'){let k=m.k||.3;$('#mv').innerHTML=mapH(m.sel,false,k);if(!m.k)for(let i=0;i<4;i++){const f=fitKM();if(Math.abs(f-k)<.004)break;k=f;$('#mv').innerHTML=mapH(m.sel,false,k)}centerOn(m.sel)}else{
  const secs=Object.keys(SEC),rows=m.sec?[...new Set(S.filter(s=>s.sec==m.sec).map(s=>s.row))]:[],nums=S.filter(s=>s.sec==m.sec&&s.row==m.row).map(s=>s.num);
  const o=(a,v,t)=>`<option value="${a}"${a==v?' selected':''}>${t}</option>`,rl=x=>x=='IN'?'안쪽':x=='OUT'?'바깥쪽':x+'열';
  $('#mv').innerHTML=`<select data-k="sec">${o('',m.sec,'층 / 구역')}${secs.map(k=>o(k,m.sec,SEC[k].l)).join('')}</select>${rows.length>1?`<select data-k="row">${o('',m.row,'열')}${rows.map(x=>o(x,m.row,rl(x))).join('')}</select>`:''}${m.row?`<select data-k="num">${o('',m.num,'번호')}${nums.map(x=>o(x,m.num,x+'번')).join('')}</select>`:''}`}}
@@ -178,11 +179,11 @@ document.addEventListener('click',e=>{const sb=e.target.closest('[data-seat]');i
  else if(a=='acc'){st.acc[v]=st.acc[v]?0:1;render()}
  else if(a=='fold'){st.fold=!st.fold;saveUI();render()}
  else if(a=='sort'){st.sort=v;render()}
- else if(a=='close'){st.m=null;$('#modal').innerHTML=''}
+ else if(a=='close'){closeM()}
  else if(a=='mode'){m.mode=v;document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x.dataset.v==v));drawMV()}
- else if(a=='save'&&m.sel){recs=recs.filter(r=>r.performanceId!=m.pid);recs.push({performanceId:m.pid,watched:true,seatId:m.sel});persist();st.m=null;$('#modal').innerHTML='';render()}
+ else if(a=='save'&&m.sel){recs=recs.filter(r=>r.performanceId!=m.pid);recs.push({performanceId:m.pid,watched:true,seatId:m.sel});persist();closeM();render()}
  else if(a=='del'&&!m.cd){m.cd=1;b.textContent='정말 삭제할까요? 한 번 더 누르세요'}
- else if(a=='del'){recs=recs.filter(r=>r.performanceId!=m.pid);persist();st.m=null;$('#modal').innerHTML='';render()}});
+ else if(a=='del'){recs=recs.filter(r=>r.performanceId!=m.pid);persist();closeM();render()}});
 document.addEventListener('change',e=>{const bk=e.target.dataset.b;if(bk){if(bk=='role'){st.br=e.target.value;st.ba=null}else st.ba=e.target.value;st.acc={2:0,3:0,4:0};render();return}const k=e.target.dataset.k,m=st.m;if(!k||!m)return;const v=e.target.value;
  if(k=='sec'){Object.assign(m,{sec:v,row:v&&new Set(S.filter(s=>s.sec==v).map(s=>s.row)).size==1?S.find(s=>s.sec==v).row:'',num:'',sel:null})}
  else if(k=='row')Object.assign(m,{row:v,num:'',sel:null});
