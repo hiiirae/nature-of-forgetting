@@ -8,7 +8,7 @@
 <title>The Nature of Forgetting — 나의 관극 기록</title>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:light;box-sizing:border-box;--bg:#E9D9B7;--ink:#3f2617;--red:#9B2F2A;--sub:#82644b;--line:#b9a17a;--p2:#dfcca4;--R:#dba48d;--S:#bdd0ab;--A:#adc2d8;--H:#d2c8b4;--on:#f6ecd6;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{color-scheme:light;box-sizing:border-box;--bg:#E9D9B7;--ink:#3f2617;--red:#9B2F2A;--sub:#82644b;--line:#b9a17a;--p2:#dfcca4;--R:#dba48d;--S:#bdd0ab;--A:#adc2d8;--H:#d2c8b4;--blue:#3f6591;--on:#f6ecd6;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 'Nanum Myeongjo',Georgia,'Batang',serif;padding-bottom:64px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
 main{max-width:720px;margin:0 auto;padding:22px 18px}
@@ -64,6 +64,9 @@ select{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(-
 .ar{display:flex;gap:4px;align-items:center;margin:3px 0;flex-wrap:wrap}.rl{font-size:11px;color:var(--sub);width:74px}.ar button{padding:1px 8px;font-size:12px;border-radius:0;border-color:var(--line)}.ar button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .abt{display:flex;gap:6px;justify-content:flex-end;margin:4px 0}.abt button{padding:1px 10px;font-size:12px;border-radius:0}
 .bar.w{grid-template-columns:minmax(60px,28%) 1fr 96px}.pg{height:2px;background:var(--line);margin-top:8px}.pg i{display:block;height:100%;background:var(--red)}
+.pf .h b.dr{color:var(--red)}.pf .h b.db{color:var(--blue)}
+.ps{min-height:calc(14px + 2.7em);font-size:14px;line-height:1.35}.ps small{display:block;color:var(--sub);font-size:11px;line-height:14px}.ps b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all}
+.pbt{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}.pbt button{flex:none;white-space:nowrap}.pbt .pri{margin-left:auto}
 </style></head><body><main id="app"></main><nav id="nav"></nav><div id="modal"></div>
 <script>
 /* ===== DATA: performances (source: 공식 CAST SCHEDULE 5장). Token = MMDD-HHMM-톰/소피이자벨라/마이크/엠마 코드. '공연 없음'(9/28,10/12,10/26) 미생성 ===== */
@@ -80,6 +83,11 @@ const P=RAW.trim().split(/\s+/).map(t=>{const[d,tm,c]=t.split('-'),date=`2026-${
 /* 주의(판독 한계): 열 번호는 도면에 표기가 없어 무대에서 가까운 순서로 부여함(중앙 1열=휠체어석 줄). 사이드 1~9번(회색)은 등급 색이 범례(R/S/A)에 없어 grade 'H'(판매 보류 추정)로 표기 */
 /* 표시명(l)과 집계 층(f)만 변경. 내부 seatId 접두사(i)는 기존 그대로 유지 → 기존 localStorage 기록 호환 */
 const ACTOR_ORDER={tom:['박정원','전성우','백성현'],sophieIsabella:['김주연','이정화'],mike:['김시유','곽다인'],emma:['강은나','송나영']}; /* UI 표시 순서 전용 */
+/* 공식 CAST SCHEDULE 이미지에서 '일요일이 아닌데' 빨간색으로 표시된 날짜(이미지 색상 직접 판독).
+   9/24 9/25 (추석연휴), 9/26(토·추석연휴), 10/3(토·개천절), 10/5(대체휴일), 10/9(한글날). 그 외 날짜는 임의로 추가하지 않음.
+   일요일은 요일 규칙으로 빨강, 나머지 토요일은 파랑 */
+const RED_DATES=['2026-09-24','2026-09-25','2026-09-26','2026-10-03','2026-10-05','2026-10-09'];
+const dcls=d=>RED_DATES.includes(d)||wd(d)=='일'?'dr':wd(d)=='토'?'db':'';
 const SEC={FRONT:{f:1,l:'1층 OP석'},L:{f:1,l:'1층 L열'},R:{f:1,l:'1층 R열'},LS:{f:2,i:1,l:'2층 좌측 사이드'},RS:{f:2,i:1,l:'2층 우측 사이드'},CENTER:{f:1,l:'1층 객석'},MAIN:{f:2,l:'2층'}};
 const S=[];const g=(sec,row,num,grade,x,y,w=1)=>S.push({id:`${SEC[sec].i||SEC[sec].f}F-${sec}-${row}-${num}`,f:SEC[sec].f,sec,row:String(row),num,grade,x,y,w,wc:w==2});
 for(const s of['LS','RS'])for(let n=1;n<=16;n++)g(s,1,n,n<10?'H':'A',s=='LS'?116:964,n<8?472+23.1*(n-1):663+23*(n-8));
@@ -146,7 +154,7 @@ function sched(){const sel=ROLES.map(([k])=>st.af[k]).filter(Boolean);
  return`<h1>Schedule<span class="ti">${PZ}</span></h1><p class="sub">2026.09.18 – 11.08 · 총 ${P.length}회차 · 관람 ${recs.length}회</p>
  <div class="fbar"><div class="chips">${ch('f','all','전체')}${ch('f','w','관람')}${ch('f','n','미관람')}</div><div class="chips">${ch('mo','all','전체 월')}${ch('mo',9,'9월')}${ch('mo',10,'10월')}${ch('mo',11,'11월')}</div>
  <div class="af" data-act="afo"><span>배우 필터</span><b>${sel.length?sel.join(' · '):'전체'}</b>${flt?`<small>전체 ${P.length}회차 중 ${L.length}회차</small>`:''}<span>${st.afo?'▴':'▾'}</span></div>${st.afo?panel:''}</div>
- ${L.map(p=>{const r=rec(p.id);return`<div class="pf${r?' done':''}"><div class="h"><b>${fd(p.date).slice(5)} ${wd(p.date)}</b><span>${p.time}</span><button class="r" data-act="open" data-v="${p.id}">${r?'기록 수정':'관람 기록'}</button></div>${castH(p)}<div class="st${r?' d':''}">${r?PZ+'관람 완료 · '+seatName(SM[r.seatId]):'미관람'}</div></div>`}).join('')||'<div class="empty">해당하는 회차가 없습니다.</div>'}`}
+ ${L.map(p=>{const r=rec(p.id);return`<div class="pf${r?' done':''}"><div class="h"><b class="${dcls(p.date)}">${fd(p.date).slice(5)} ${wd(p.date)}</b><span>${p.time}</span><button class="r" data-act="open" data-v="${p.id}">${r?'기록 수정':'관람 기록'}</button></div>${castH(p)}<div class="st${r?' d':''}">${r?PZ+'관람 완료 · '+seatName(SM[r.seatId]):'미관람'}</div></div>`}).join('')||'<div class="empty">해당하는 회차가 없습니다.</div>'}`}
 function seats(){const c=counts(),s=SM[st.ss];return`<h1>Seats</h1><p class="sub">내가 앉아본 자리</p>${mapH(st.ss,true,st.ks||fitK())}<div id="sd">${seatDetail()}</div>`}
 function seatDetail(){const s=SM[st.ss];if(!s)return'<div class="empty">좌석을 눌러 관람 기록을 확인하세요.</div>';const L=recs.filter(r=>r.seatId==s.id).sort((a,b)=>a.performanceId<b.performanceId?-1:1);
  return`<h2>${seatName(s)} <small>(${GR[s.grade]})</small></h2><b>총 ${L.length}회 관람</b>${L.map(r=>{const p=PM[r.performanceId];return`<div class="dt"><b>${fd(p.date)} ${p.time}</b>${castH(p)}</div>`}).join('')}`}
@@ -177,7 +185,7 @@ function drawMV(){const m=st.m;if(m.mode=='map'){let k=m.k||.3;$('#mv').innerHTM
  const secs=SEC_ORDER,rows=m.sec?[...new Set(S.filter(s=>s.sec==m.sec).map(s=>s.row))]:[],nums=S.filter(s=>s.sec==m.sec&&s.row==m.row).map(s=>s.num);
  const o=(a,v,t)=>`<option value="${a}"${a==v?' selected':''}>${t}</option>`,rl=x=>x=='IN'?'안쪽':x=='OUT'?'바깥쪽':x+'열';
  $('#mv').innerHTML=`<select data-k="sec">${o('',m.sec,'층 / 구역')}${secs.map(k=>o(k,m.sec,SEC[k].l)).join('')}</select>${rows.length>1?`<select data-k="row">${o('',m.row,'열')}${rows.map(x=>o(x,m.row,rl(x))).join('')}</select>`:''}${m.row?`<select data-k="num">${o('',m.num,'번호')}${nums.map(x=>o(x,m.num,x+'번')).join('')}</select>`:''}`}}
-function drawMP(){const m=st.m,s=SM[m.sel];$('#mp').innerHTML=`<div style="display:flex;align-items:center;gap:10px"><div style="flex:1;min-width:0"><small style="color:var(--sub);display:block">선택한 좌석</small><b>${s?seatName(s)+' · '+GR[s.grade]:'좌석을 선택하세요'}</b></div>${rec(m.pid)?'<button data-act="del">기록 삭제</button>':''}<button class="pri" data-act="save" ${s?'':'disabled'}>이 좌석으로 저장</button></div>`}
+function drawMP(){const m=st.m,s=SM[m.sel];$('#mp').innerHTML=`<div class="ps"><small>선택한 좌석</small><b>${s?seatName(s)+' · '+GR[s.grade]:'좌석을 선택하세요'}</b></div><div class="pbt">${rec(m.pid)?'<button data-act="del">기록 삭제</button>':''}<button class="pri" data-act="save" ${s?'':'disabled'}>이 좌석으로 저장</button></div>`}
 function pickSeat(id){const m=st.m;if(m){const s=SM[id];Object.assign(m,{sel:id,sec:s.sec,row:s.row,num:s.num});mark(id);drawMP()}else{st.ss=id;mark(id);$('#sd').innerHTML=seatDetail()}}
 
 /* ===== render + events ===== */
