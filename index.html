@@ -30,8 +30,8 @@ nav button{flex:1;border:0;padding:14px 0;letter-spacing:1px;font-weight:700;col
 .st{font-size:13px;color:var(--sub);margin-top:3px}.st.d{color:var(--red)}
 .pz{width:13px;height:13px;fill:var(--red);vertical-align:-2px;margin-right:4px}
 .bar{display:grid;grid-template-columns:minmax(90px,38%) 1fr 44px;align-items:center;gap:8px;font-size:14px;padding:2px 0}.bar i{height:6px;background:var(--red);display:block}.bar b{text-align:right;font-weight:700}
-.mapw{overflow:auto;border:1px solid var(--line);background:var(--p2);max-height:70vh;-webkit-overflow-scrolling:touch}
-.map{position:relative}.seat{position:absolute;padding:0;border:1px solid rgba(73,53,45,.28);border-radius:2px;line-height:1;display:flex;align-items:center;justify-content:center;color:var(--ink);background:var(--H)}
+.mapw{overflow:auto;border:1px solid var(--line);background:var(--p2);max-height:70vh;-webkit-overflow-scrolling:touch;display:flex}
+.map{position:relative;margin:auto;flex-shrink:0}.seat{position:absolute;padding:0;border:1px solid rgba(73,53,45,.28);border-radius:2px;line-height:1;display:flex;align-items:center;justify-content:center;color:var(--ink);background:var(--H)}
 .gR{background:var(--R)}.gS{background:var(--S)}.gA{background:var(--A)}.seat:hover{outline:2px solid var(--red);z-index:2}
 .seat.has{background:var(--red);color:var(--on);border-color:var(--red)}.seat.sel{background:var(--ink);color:var(--bg);outline:2px solid var(--red);z-index:3}
 .seat i{position:absolute;top:-6px;right:-5px;font-style:normal;font-size:10px;background:var(--ink);color:var(--bg);border-radius:8px;min-width:14px;height:14px;line-height:14px;text-align:center;z-index:4}
@@ -75,6 +75,7 @@ select{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(-
 .sheet.sm{height:auto;max-height:90vh;max-height:90dvh}.opt{display:block;width:100%;text-align:left;padding:10px 12px;margin:0 0 8px;border:1px solid var(--ink);border-radius:0}.opt b{display:block;font-size:16px}.opt small{color:var(--sub)}
 .xb{border-color:var(--red);color:var(--red);padding:4px 12px;border-radius:0;font-size:13px;margin:0 0 6px}
 
+/* 4차 수정: SEATS 전체보기 시 좌석표를 viewport 가로 중앙에 */#app .mapw .map{margin:0 auto}
 /* 3차 수정 */.cover .cap{font-size:11.5px;letter-spacing:0;white-space:nowrap}
 /* ===== 리뉴얼: 밝은 아이보리 종이 + 코랄 라인 + 딥레드 (기능 로직 변경 없음) ===== */
 h1{color:var(--red);font-size:36px}#app[data-tab=home] h1{font-size:40px;line-height:1.05;margin-top:14px}
@@ -258,6 +259,36 @@ function drawSettle(ctx,W,imgs,inc){
  const L=(x1,x2,yy,c=LN,w=2)=>{ctx.strokeStyle=c;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(x1,yy);ctx.lineTo(x2,yy);ctx.stroke()};
  const pz=(cx,cy,sz,c)=>{ctx.save();ctx.translate(cx-sz/2,cy-sz/2);ctx.scale(sz/12,sz/12);ctx.fillStyle=c;ctx.fill(new Path2D(PZD));ctx.restore()};
  const rule=yy=>{L(M,W/2-24,yy);L(W/2+24,W-M,yy);pz(W/2,yy,20,RED)};
+ if(inc){/* ===== 좌석표 포함: 가로형 2열 export 레이아웃 (export-with-seats) ===== */
+  const ML=100,DX=Math.round(W*.52),LX0=ML,LX1=DX-40,RX0=DX+40,RX1=W-ML,cR=(RX0+RX1)/2,cL=(LX0+LX1)/2;
+  const rl=yy=>{L(ML,W/2-24,yy);L(W/2+24,W-ML,yy);pz(W/2,yy,20,RED)};
+  const tape=(t,cx,yy,px,pad)=>{ctx.font=F(700,px);const w=ctx.measureText(t).width;ctx.fillStyle='rgba(244,197,188,.75)';ctx.fillRect(cx-w/2-pad,yy-px-1,w+pad*2,px+12);T(t,cx,yy,F(700,px),INK)};
+  T('The Nature of Forgetting',W/2,118,F(800,88),RED);T('나의 관극 정산',W/2,176,F(700,32),SUB);rl(208);
+  T('총 관람',W/2,256,F(700,26),SUB);
+  const big=String(n),suf=` / ${P.length}회`;ctx.font=F(800,140);const w1=ctx.measureText(big).width;ctx.font=F(700,46);const w2=ctx.measureText(suf).width,x0=(W-w1-w2)/2;
+  T(big,x0,372,F(800,140),RED,'left');T(suf,x0+w1,372,F(700,46),INK,'left');rl(412);
+  const bt=440,PW=112,PH=149,GAP=40,HD2={tom:'TOM · 톰',sophieIsabella:'SOPHIE & ISABELLA · 소피·이자벨라',mike:'MIKE · 마이크',emma:'EMMA · 엠마'};
+  tape('배우별 관람 횟수',cR,bt+30,30,24);let ry=bt+64;
+  for(const[k]of ROLES){const hy=ry+26;ctx.font=F(700,24);const tw=ctx.measureText(HD2[k]).width;tape(HD2[k],cR,hy,24,16);ctx.font=F(700,24);L(RX0,cR-tw/2-20,hy-8,LN,1.5);L(cR+tw/2+20,RX1,hy-8,LN,1.5);
+   const acs=ACTOR_ORDER[k],tot=acs.length*PW+(acs.length-1)*GAP,top=ry+44;
+   acs.forEach((a,i)=>{const x=cR-tot/2+i*(PW+GAP),im=imgs[a],sn=ps.filter(p=>p.cast[k]==a).length,tt=P.filter(p=>p.cast[k]==a).length;
+    if(im){const sc=Math.max(PW/im.naturalWidth,PH/im.naturalHeight),sw=PW/sc,sh=PH/sc;ctx.drawImage(im,(im.naturalWidth-sw)/2,(im.naturalHeight-sh)*.2,sw,sh,x,top,PW,PH)}else{ctx.fillStyle=P2;ctx.fillRect(x,top,PW,PH);pz(x+PW/2,top+PH/2,36,'rgba(130,100,75,.45)')}
+    T(a,x+PW/2,top+PH+30,F(700,26),INK);T(`${sn} / ${tt}회`,x+PW/2,top+PH+58,F(700,24),RED)});
+   ry=top+PH+58+26}
+  const rEnd=ry,k=(LX1-LX0)/900,leftH=34+730*k+44+10,off=bt+((rEnd-bt)-leftH)/2;
+  ctx.strokeStyle='#EE9D93';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(DX,bt);ctx.lineTo(DX,rEnd);ctx.stroke();
+  tape('SEAT RECORD · 나의 좌석 기록',cL,off+22,26,24);
+  const ox=LX0,oy=off+34,X=v=>(v-90)*k+ox,Y=v=>(v-365)*k+oy;
+  ctx.strokeStyle=SUB;ctx.lineWidth=1.5;ctx.strokeRect(X(291),Y(378),498*k,148*k);T('STAGE',X(540),Y(452),F(400,26),SUB,'center','middle');
+  ctx.beginPath();ctx.moveTo(X(155),Y(378));ctx.lineTo(X(155),Y(880));ctx.lineTo(X(925),Y(880));ctx.lineTo(X(925),Y(378));ctx.stroke();
+  T('1F',X(540),Y(861),F(700,24),SUB,'center','middle');T('2F',X(540),Y(1054),F(700,24),SUB,'center','middle');T('L열',X(222),Y(489),F(400,20),SUB,'center','middle');T('R열',X(858),Y(489),F(400,20),SUB,'center','middle');
+  S.forEach(s=>{const w=(s.w==2?54:24)*k,h=20*k,x=X(s.x)-w/2,yy=Y(s.y)-h/2,c=cn[s.id]||0;ctx.fillStyle=c?RED:GC[s.grade];ctx.fillRect(x,yy,w,h);ctx.strokeStyle=c?RED:'rgba(73,53,45,.28)';ctx.lineWidth=1;ctx.strokeRect(x,yy,w,h);
+   T(s.wc?'휠'+s.num:String(s.num),x+w/2,yy+h/2+1,F(400,Math.max(9,8.5*k)),c?BG:INK,'center','middle')});
+  S.forEach(s=>{const c=cn[s.id]||0;if(c>1){const w=(s.w==2?54:24)*k,cx=X(s.x)+w/2-2,cy=Y(s.y)-10*k+2;ctx.beginPath();ctx.arc(cx,cy,10,0,7);ctx.fillStyle=INK;ctx.fill();T(String(c),cx,cy+1,F(700,13),BG,'center','middle')}});
+  const ly=oy+730*k+44,lg=[['R석',GC.R],['S석',GC.S],['A석',GC.A],['등급 미표기',GC.H],['내가 앉은 좌석',RED]];ctx.font=F(400,22);const ws=lg.map(([t])=>30+ctx.measureText(t).width),sum=ws.reduce((a,b)=>a+b,0)+28*(lg.length-1);let lx=cL-sum/2;
+  lg.forEach(([t,c],i)=>{ctx.fillStyle=c;ctx.fillRect(lx,ly-15,22,16);ctx.strokeStyle='rgba(73,53,45,.28)';ctx.lineWidth=1;ctx.strokeRect(lx,ly-15,22,16);T(t,lx+30,ly,F(400,22),INK,'left');lx+=ws[i]+28});
+  return rEnd+150}
+
  T('The Nature',W/2,130,F(800,92),RED);T('of Forgetting',W/2,230,F(800,92),RED);T('나의 관극 정산',W/2,298,F(700,34),SUB);rule(350);
  T('총 관람',W/2,414,F(700,28),SUB);
  const big=String(n),suf=` / ${P.length}회`;ctx.font=F(800,180);const w1=ctx.measureText(big).width;ctx.font=F(700,52);const w2=ctx.measureText(suf).width,x0=(W-w1-w2)/2;
@@ -285,12 +316,15 @@ function drawSettle(ctx,W,imgs,inc){
 async function makeSettlement(inc){
  try{await Promise.all(['400','700','800'].map(w=>document.fonts.load(`${w} 40px "Nanum Myeongjo"`)));await document.fonts.ready}catch(e){}
  const imgs={};await Promise.all(Object.entries(CAST_IMAGES).map(([a,u])=>new Promise(res=>{const im=new Image();im.onload=()=>{imgs[a]=im;res()};im.onerror=()=>res();im.src=u})));
- const W=1200,H=Math.ceil(drawSettle(document.createElement('canvas').getContext('2d'),W,imgs,inc)),sc=Math.min(2,Math.sqrt(15e6/(W*H)));
+ const W=inc?2000:1200,H=Math.ceil(drawSettle(document.createElement('canvas').getContext('2d'),W,imgs,inc)),sc=Math.min(2,Math.sqrt(15e6/(W*H)));
  const cv=document.createElement('canvas');cv.width=Math.round(W*sc);cv.height=Math.round(H*sc);const ctx=cv.getContext('2d');ctx.scale(sc,sc);
  ctx.fillStyle='#FAF8F3';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#EE9D93';ctx.lineWidth=1.5;ctx.strokeRect(30,30,W-60,H-60);
   const dr=(p,x,yy,sz,ex)=>{ctx.save();ctx.translate(x,yy);ctx.scale(sz/80,sz/80);ctx.strokeStyle='#EE9D93';ctx.lineWidth=1.8*80/sz*1.4;ctx.lineCap='round';ctx.lineJoin='round';p.forEach(d=>ctx.stroke(new Path2D(d)));ctx.restore()};
   dr(['M6 34L74 8L52 70L38 46Z','M74 8L38 46L36 62L47 52'],W-220,60,130);dr(['M12 62L58 16L68 26L22 72L10 74Z','M52 22L62 32M12 62L22 72'],70,70,110);
-  dr(['M8 22h64v12a6 6 0 0 0 0 12v12H8V46a6 6 0 0 0 0-12z','M52 24v34','M18 34h24M18 44h16'],W-200,H-190,120);dr(['M14 20h16a7 7 0 1 1 14 0h16v16a7 7 0 1 1 0 14v16H14V50a7 7 0 1 0 0-14z'],70,H-180,100);
+  /* 정산 이미지 공통 코너 장식: 좌상 연필 / 우상 종이비행기 / 좌하 퍼즐 / 우하 자전거 (관람 정산만·좌석표 포함 동일) */
+  const PUZ=['M14 20h16a7 7 0 1 1 14 0h16v16a7 7 0 1 1 0 14v16H14V50a7 7 0 1 0 0-14z'];
+  const BIKE=['M31 54a13 13 0 1 0-26 0a13 13 0 1 0 26 0','M75 54a13 13 0 1 0-26 0a13 13 0 1 0 26 0','M18 54L30 32H52L38 54Z','M52 32L62 54','M18 54H38','M30 32L27 28H35','M52 32L50 25H58'];
+  dr(PUZ,60,H-165,100);dr(BIKE,W-175,H-165,115);
   drawSettle(ctx,W,imgs,inc);
  return await new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error('toBlob')),'image/png'))}
 let expTok=0;
