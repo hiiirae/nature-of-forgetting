@@ -76,6 +76,7 @@ select{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(-
 .xb{border-color:var(--red);color:var(--red);padding:4px 12px;border-radius:0;font-size:13px;margin:0 0 6px}
 
 /* 4차 수정: SEATS 전체보기 시 좌석표를 viewport 가로 중앙에 */#app .mapw .map{margin:0 auto}
+/* 막공 배지(배우 이름 옆) */.fin{display:inline-block;font-style:normal;font-size:9px;line-height:1;background:var(--red);color:#fff;padding:2px 3px;margin-left:3px;letter-spacing:0;vertical-align:1px;white-space:nowrap}.cast span{white-space:nowrap}
 /* 3차 수정 */.cover .cap{font-size:11.5px;letter-spacing:0;white-space:nowrap}
 /* ===== 리뉴얼: 밝은 아이보리 종이 + 코랄 라인 + 딥레드 (기능 로직 변경 없음) ===== */
 h1{color:var(--red);font-size:36px}#app[data-tab=home] h1{font-size:40px;line-height:1.05;margin-top:14px}
@@ -102,7 +103,9 @@ const RAW=`0918-2000-JKGA 0919-1500-PLYS 0919-1930-BKGA 0920-1500-JLYS 0920-1930
 1001-2000-JLGA 1002-2000-PLYS 1003-1500-BKYA 1003-1930-JKYA 1004-1500-PLGS 1004-1930-BLGA 1005-1500-JKYS 1005-1930-JLGA
 1007-2000-BKYS 1008-2000-PLYA 1009-1500-JKGS 1009-1930-BKGS 1010-1500-JLYA 1010-1930-BLYA 1011-1500-PKGA 1011-1930-PLGS 1013-2000-PLGA 1014-1600-BKYS 1014-2000-JKYA 1015-2000-PKGA 1016-2000-PLYS 1017-1500-JKGS 1017-1930-PKGS 1018-1500-BLYA 1018-1930-JLYA
 1020-2000-PLGS 1021-2000-JKYS 1022-2000-BKGA 1023-2000-PLYA 1024-1500-BLYS 1024-1930-PKYA 1025-1500-JKGS 1025-1930-JLGA 1027-2000-PLGS 1028-1600-JKYS 1028-2000-JLYS 1029-2000-BKGA 1030-2000-JLGA 1031-1500-PKYA 1031-1930-PKYA 1101-1500-BLGS
-1103-2000-JLGS 1104-1600-PKYS 1104-2000-BLYS 1105-2000-PKGA 1106-2000-BKYA 1107-1500-PLGA 1107-1930-BLGA 1108-1500-JKYS 1108-1930-JKYS`;
+1103-2000-JLGS 1104-1600-PKYS 1104-2000-BLYS 1105-2000-PKGA 1106-2000-BKYA 1107-1500-PLGA 1107-1930-BLGA 1108-1500-JKYS 1108-1930-JKYS
+1110-2000-PKGA 1111-2000-BLGS 1112-2000-JKYA 1113-2000-PLYS 1114-1500-BKYS 1114-1930-BKYS 1115-1500-PLGA 1115-1930-JLGA 1117-2000-BLGS 1118-1600-JKGA 1118-2000-JLYA 1119-2000-PKYA 1120-2000-JLGS 1121-1500-BKGA 1121-1930-PKGS 1122-1500-BLYA 1122-1930-PLYS
+1124-2000-BKYS 1125-1600-JLGS 1125-2000-JKGA 1126-2000-PLYA 1127-2000-BKGS 1128-1500-PKYS 1128-1930-BLYA 1129-1500-JKGA 1129-1930-PLGS`;
 const P=RAW.trim().split(/\s+/).map(t=>{const[d,tm,c]=t.split('-'),date=`2026-${d.slice(0,2)}-${d.slice(2)}`;return{id:`${date}-${tm}`,date,time:tm.slice(0,2)+':'+tm.slice(2),cast:{tom:T[c[0]],sophieIsabella:SI[c[1]],mike:MK[c[2]],emma:EM[c[3]]}}}).sort((a,b)=>a.id<b.id?-1:1);
 
 /* ===== DATA: seats (source: 공식 등급별 좌석배치도). x,y = 이미지 좌표(좌석 중심), w=2 → 휠체어석 ===== */
@@ -112,6 +115,8 @@ const ACTOR_ORDER={tom:['박정원','전성우','백성현'],sophieIsabella:['�
 /* 공식 CAST SCHEDULE 이미지에서 '일요일이 아닌데' 빨간색으로 표시된 날짜(이미지 색상 직접 판독).
    9/24 9/25 (추석연휴), 9/26(토·추석연휴), 10/3(토·개천절), 10/5(대체휴일), 10/9(한글날). 그 외 날짜는 임의로 추가하지 않음.
    일요일은 요일 규칙으로 빨강, 나머지 토요일은 파랑 */
+/* 막공 배지: 공식 CAST SCHEDULE 이미지에 '막공' 표시가 있는 회차·배우 조합만 (날짜 규칙으로 자동 판단하지 않음, 캐스팅 데이터와 별개) */
+const FINALS={'2026-11-28-1930':{tom:'백성현',mike:'김시유'},'2026-11-29-1500':{tom:'전성우',sophieIsabella:'김주연',mike:'곽다인',emma:'강은나'},'2026-11-29-1930':{tom:'박정원',sophieIsabella:'이정화',mike:'곽다인',emma:'송나영'}};
 const RED_DATES=['2026-09-24','2026-09-25','2026-09-26','2026-10-03','2026-10-05','2026-10-09'];
 const dcls=d=>RED_DATES.includes(d)||wd(d)=='일'?'dr':wd(d)=='토'?'db':'';
 /* 배우 프로필 이미지 경로 (GitHub 저장소 기준 상대경로). 파일이 없거나 로드 실패 시 퍼즐 조각 자리표시로 대체됨 */
@@ -140,10 +145,10 @@ const $=s=>document.querySelector(s);
 const ROLES=[['tom','톰'],['sophieIsabella','소피·이자벨라'],['mike','마이크'],['emma','엠마']];
 const GR={R:'R석',S:'S석',A:'A석',H:'등급 미표기(판매 보류 추정)'};
 const fd=d=>d.replace(/-/g,'.'),wd=d=>'일월화수목금토'[new Date(d+'T00:00:00').getDay()];
-const rowName=s=>s.sec=='LS'||s.sec=='RS'?SEC[s.sec].l:s.sec=='L'||s.sec=='R'?`${SEC[s.sec].l} ${s.row=='IN'?'안쪽':'바깥쪽'}`:s.sec=='CENTER'&&s.row=='1'?'1층 객석 1열(휠체어석 줄)':`${SEC[s.sec].l} ${s.row}열`;
+const rowName=s=>s.sec=='LS'||s.sec=='RS'?SEC[s.sec].l:s.sec=='L'||s.sec=='R'?`${SEC[s.sec].l} ${s.row=='IN'?'안쪽':'바깥쪽'}`:s.sec=='CENTER'&&s.row=='1'?'1층 객석 1열':`${SEC[s.sec].l} ${s.row}열`;
 const seatName=s=>`${rowName(s)} ${s.wc?'휠체어 ':''}${s.num}번`;
 const counts=()=>{const c={};recs.forEach(r=>c[r.seatId]=(c[r.seatId]||0)+1);return c};
-const castH=p=>`<div class="cast">${ROLES.map(([k,l])=>`<span><em>${l}</em>${p.cast[k]}</span>`).join('')}</div>`;
+const castH=(p,fin)=>`<div class="cast">${ROLES.map(([k,l])=>`<span><em>${l}</em>${p.cast[k]}${fin&&FINALS[p.id]&&FINALS[p.id][k]===p.cast[k]?'<i class="fin">막공</i>':''}</span>`).join('')}</div>`;
 const PZ='<svg class="pz" viewBox="0 0 12 12"><path d="M1 3h3a1.5 1.5 0 1 1 3 0h4v3a1.5 1.5 0 1 0 0 3v2H1z"/></svg>';
 const tally=(arr)=>{const c={};arr.forEach(k=>c[k]=(c[k]||0)+1);return Object.entries(c).sort((a,b)=>b[1]-a[1])};
 const BK='<svg class="bk" viewBox="0 0 24 14"><g fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><circle cx="5" cy="9" r="3.6"/><circle cx="19" cy="9" r="3.6"/><path d="M5 9l4-6h6l4 6M9 3l3 6H5M15 3l-3 6M8 1.8h3M15 3l1-1.5h2"/></g></svg>';
@@ -180,10 +185,10 @@ function sched(){const sel=ROLES.map(([k])=>st.af[k]).filter(Boolean);
  const L=P.filter(p=>(st.f=='all'||(st.f=='w')==!!rec(p.id))&&(st.mo=='all'||+p.date.slice(5,7)==st.mo)&&sel.every(a=>Object.values(p.cast).includes(a)));
  const ch=(a,v,l)=>`<button class="${st[a]==v?'on':''}" data-act="${a}" data-v="${v}">${l}</button>`,flt=st.f!='all'||st.mo!='all'||sel.length>0;
  const panel=ROLES.map(([k,l])=>`<div class="ar"><span class="rl">${l}</span>${ACTOR_ORDER[k].map(a=>`<button class="${st.af[k]==a?'on':''}" data-act="af" data-v="${k}|${a}">${a}</button>`).join('')}</div>`).join('')+`<div class="abt"><button data-act="afr">초기화</button><button data-act="afd">완료</button></div>`;
- return`<h1>Schedule<span class="ti">${PZ}</span></h1><p class="sub">2026.09.18 – 11.08 · 총 ${P.length}회차 · 관람 ${recs.length}회</p>
+ return`<h1>Schedule<span class="ti">${PZ}</span></h1><p class="sub">${fd(P[0].date)} – ${fd(P[P.length-1].date).slice(5)} · 총 ${P.length}회차 · 관람 ${recs.length}회</p>
  <div class="fbar"><div class="chips">${ch('f','all','전체')}${ch('f','w','관람')}${ch('f','n','미관람')}</div><div class="chips">${ch('mo','all','전체 월')}${ch('mo',9,'9월')}${ch('mo',10,'10월')}${ch('mo',11,'11월')}</div>
  <div class="af" data-act="afo"><span>배우 필터</span><b>${sel.length?sel.join(' · '):'전체'}</b>${flt?`<small>전체 ${P.length}회차 중 ${L.length}회차</small>`:''}<span>${st.afo?'▴':'▾'}</span></div>${st.afo?panel:''}</div>
- ${L.map(p=>{const r=rec(p.id);return`<div class="pf${r?' done':''}"><div class="h"><b class="${dcls(p.date)}">${fd(p.date).slice(5)} ${wd(p.date)}</b><span>${p.time}</span><button class="r" data-act="open" data-v="${p.id}">${r?'기록 수정':'관람 기록'}</button></div>${castH(p)}<div class="st${r?' d':''}">${r?PZ+'관람 완료 · '+seatName(SM[r.seatId]):'미관람'}</div></div>`}).join('')||'<div class="empty">해당하는 회차가 없습니다.</div>'}`}
+ ${L.map(p=>{const r=rec(p.id);return`<div class="pf${r?' done':''}"><div class="h"><b class="${dcls(p.date)}">${fd(p.date).slice(5)} ${wd(p.date)}</b><span>${p.time}</span><button class="r" data-act="open" data-v="${p.id}">${r?'기록 수정':'관람 기록'}</button></div>${castH(p,true)}<div class="st${r?' d':''}">${r?PZ+'관람 완료 · '+seatName(SM[r.seatId]):'미관람'}</div></div>`}).join('')||'<div class="empty">해당하는 회차가 없습니다.</div>'}`}
 function seats(){const c=counts(),s=SM[st.ss];return`<h1>Seats</h1><p class="sub">내가 앉아본 자리</p>${mapH(st.ss,true,st.ks||fitK(),Math.ceil(730*fitK())+2)}<div id="sd">${seatDetail()}</div>`}
 function seatDetail(){const s=SM[st.ss];if(!s)return'<div class="empty">좌석을 눌러 관람 기록을 확인하세요.</div>';const L=recs.filter(r=>r.seatId==s.id).sort((a,b)=>a.performanceId<b.performanceId?-1:1);
  return`<h2>${seatName(s)} <small>(${GR[s.grade]})</small></h2><b>총 ${L.length}회 관람</b>${L.map(r=>{const p=PM[r.performanceId];return`<div class="dt"><b>${fd(p.date)} ${p.time}</b>${castH(p)}</div>`}).join('')}`}
